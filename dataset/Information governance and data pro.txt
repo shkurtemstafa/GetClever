@@ -1,0 +1,147 @@
+Information governance and data protection
+Version 1.3, ​03 March 2025
+
+This guidance is part of the Information governance and data protection section of the Good practice guidelines for GP electronic patient records.
+Information governance
+Being able to access patient data promptly in primary care allows us to work efficiently and provide a high standard of care. In certain circumstances, primary care data can also be used to guide both population health management and clinical research. It is, therefore, vital to ensure that patient information is used appropriately and processed and stored in a secure manner.
+
+Information governance provides a framework to help us use information in a legal and ethical way, ensuring that data is:
+
+safe and secure
+available
+up-to-date and accurate
+Importantly, information governance also helps patients understand clearly and transparently what their data is used for, why it is used, and how it is used.
+
+The best place to find in-depth, practical guidance relating to information governance is the NHS Transformation Directorate website. You can find up-to-date information relating to topics such as access to records through the NHS app, and sharing information with the police. These should be used to supplement the other subjects covered in these guidelines.
+
+Data protection policies
+Your organisation should have data protection policies in place.  As a minimum, your policies should cover:
+
+data protection and confidentiality, including data protection by design, data protection impact assessments, transparency and data subject rights
+freedom of information (FoI)
+records management
+data quality
+arrangements for any of your staff members who work from home such as remote working policies, network access, video conferencing
+These should be reviewed at regular intervals and be available to staff and the general public.  For more information, please see the governance section of the Data Security and Protection Toolkit guidance.
+
+Staff awareness
+All staff (including new starters, locums, temporary staff, students, volunteers and staff contracted to work in the organisation) that have access to personal data must complete an appropriate data security and protection induction and training. They must also be aware of any data protection policies which they must follow relating to their role.
+
+The Data Security Awareness level 1 training, suitable for all health and care staff, can be accessed free of charge on ESR and on the e-learning for health hub. 
+
+For more information, please see the induction and training delivery sections of the Data Security and Protection Toolkit guidance.  
+
+Routine topics for primary care
+Email and text message communications
+When using emails and text messages to communicate with patients, such as for appointments or reminders, you should ensure that information is used and shared safely.
+
+For information on what you need to make clear to patients when using text or email messaging systems, as well as patient preferences, confidentiality and recording information, please see the NHS Transformation Directorate guidance on email and text message communications.
+
+Video conferencing
+You should have a policy and processes in place for conducting video conferencing calls, whether they occur between staff members or between clinicians and patients.
+
+For information on using video conferencing tools securely, protecting patient confidentiality and making notes or recordings, please see the NHS Transformation Directorate guidance on using video conferencing and consultation tools. There is also another article in this series on Online and video consultations.
+
+Remote working
+It may be appropriate for staff members of primary care organisations to work from home on a part-time or full-time basis, provided they are able to fulfil their function.
+
+For a brief summary of key things to consider for remote working including using your own device, security protocols, and accessing confidential patient information, please view the NHS Transformation Directorate’s’COVID-19 questions for health and care organisations’ on IG question time page. There is also another article in this series on Microsoft Teams and remote working.
+
+Clinical images
+During the COVID-19 pandemic, the Royal College of General Practitioners produced some key principles relating to receiving, storing and sending intimate clinical images. Although not all images will be considered ‘intimate’ by patients, these principles provide a good basis which can be applied more broadly when using clinical images.
+
+Requests for information
+In primary care, you are likely to receive various types of requests for information:
+
+Subject access requests (SARs): Patients have the right to access and receive a copy of their personal data. There is another article in this series about subject access requests. 
+Access to records of deceased people: People may request access to the records of someone who has died, for example a family member.  See the NHS Transformation Directorate guidance on Access to the health and care records of deceased people and Primary Care Support England also has guidance on their website about Accessing Medical Records.
+ Freedom of information (FOI): You may receive requests for information from various sources. See the Information Commissioner’s Office (ICO) guide to FOI for doctors for more information. 
+Personal data breaches
+What is a personal data breach?
+Your organisation is responsible for information security, and you are required by law to protect personal and confidential patient information.
+
+Personal data breaches are rare, but there may be times when things go wrong. A personal data breach is an accidental or deliberate breach of security which leads to:
+
+loss or unlawful destruction of data
+alteration of data
+unauthorised disclosure
+unauthorised access
+What to do if you think there has been a data breach
+If you become aware of a personal data breach, you should follow your organisation’s procedure for reporting such an event.  This will usually be via the incident reporting process in your organisation.  If you are not sure what to do you should tell your data protection officer (DPO).
+
+Breaches should be reported as soon as they become apparent.  If you are not sure if a breach has occurred, you should still report it via your organisation’s incident reporting system.  
+
+For more information, please see the NHS Transformation Directorate guidance on personal data breaches. 
+
+Data Security and Protection Toolkit (DSPT) 
+Your organisation will need to allocate some time and resources to complete the DSPT each year. This is an online self-assessment tool that allows general practices and other organisations to measure their performance against the National Data Guardian’s 10 data security standards.
+
+Completing the DSPT is a mandatory requirement to demonstrate that your organisation is practising good data security and handling personal data correctly.  
+
+Types of information
+Personal data
+Personal data identifies an individual including staff, patients, family or friends, and members of the public. Data protection laws, including UK General Data Protection Regulation (GDPR) apply to personal data.
+
+Data protection laws do not apply to deceased people, but the common law duty of confidentiality does apply. For more information, please see NHS England’s Transformation Directorate guidance on access to the health and care records of deceased people.
+
+Pseudonymised data
+Pseudonymisation ensures that you cannot identify an individual without the use of additional information. It is important to remember that pseudonymised data is still personal data so it cannot be shared freely.
+
+It could involve replacing an NHS number, a name or an address with a unique number or code (a pseudonym). For example, you could be working with other GP practices to identify patients in the area who would benefit from a new service.  Other practices would not need to know the names of your patients so you could replace identifiers with a pseudonym for the discussion. It would be important that the information about which patient had been allocated which pseudonym was kept securely at your practice and not shared. Once it had been agreed which patients were suitable for the new service, only your practice would be able to re-identify these patients because you are directly involved in the patient’s care.
+
+Anonymous data
+
+Anonymous data is data that no longer identifies a person or people. Truly anonymised data is not considered personal data under the UK GDPR. This means it is not subject to the same restrictions as personal data. Anonymous data may be presented as general trends or statistics.  
+
+Key IG roles
+Caldicott Guardians
+Your organisation needs to appoint a Caldicott Guardian. Caldicott Guardians are senior people within oYour organisation needs to appoint a Caldicott Guardian. Caldicott Guardians are senior people within organisations that help ensure confidential information about patients is used ethically, legally, and appropriately.
+
+Their responsibilities include:
+
+advising on disclosures of confidential information (particularly in situations of legal and/or ethical ambiguity)
+being involved in addressing patient or service user complaints
+reviewing and advising on data protection documentation
+contributing to audits and helping to investigate data breaches
+If it is not proportionate or feasible to appoint a member of your own practice staff to the Caldicott Guardian role, your organisation may choose to share a Caldicott Guardian with its primary care network (PCN) or a group of GP practices.
+
+Data protection officers (DPOs)
+A DPO is an independent advisory role held by an expert in data protection, who advises you on how to compA DPO is an independent advisory role held by an expert in data protection, who advises you on how to comply with your data protection obligations.
+
+See the ICO website for more information about the role requirements and who to appoint.  
+
+The British Medical Association’s (BMA) website has guidance tailored to GP practices. 
+
+Legal and regulatory bases
+Common law duty of confidentiality
+Common law is a form of law based on previous court cases decided by judges. The common law duty of confidentiality says that information about a person cannot be disclosed without that person’s consent.  You can find out more about this here.
+
+You should not share confidential patient information (even for individual care) if you have reason to believe that a person has objected or would be likely to object to the information being shared.  There are some exceptions to this, for example, where you have safeguarding concerns about a child.
+
+UK General Data Protection Regulation (UK GDPR)
+The UK GDPR sets out seven key rules called data protection principles. Health and care professionals must follow these strict principles.
+
+Your practice will need to demonstrate how you are complying with all these principles.s.
+
+Caldicott Principles
+The Caldicott Principles are designed to ensure people’s information is kept confidential and used appropriately.  They align with data protection laws and will help guide you in how to use information.
+
+Other helpful resources
+NHS Transformation Directorate guidance on Subject Access Requests.
+Other helpful resources
+Please email the Good Practice Guidelines team here for more information on this subject.
+
+This email address is not intended for use by members of the public, patients and their representatives who should instead contact the NHS England Customer Contact Centre – england.contactus@nhs.net
+
+NHS colleagues and contractors should use this mailbox for queries relating to the management of the GPGv5 and should contact the relevant NHS England team or programme for further information on topic content.
+
+Related GPG articles
+High quality patient records
+NHS mail
+MS Teams and remote working
+Video consultation tools
+Safeguarding
+Subject access requests (SAR)
+Consent to record sharing
+Population health management
+Primary Care Networks (PCNs)

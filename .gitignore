@@ -69,10 +69,7 @@ data/chroma_db.zip
 *.pickle
 
 # Large PDF files - EXCLUDE DATASET (not needed if vector store exists)
-dataset/*.pdf
-dataset/*.docx
-dataset/*.txt
-dataset/*.png
+
 
 # Temporary files
 *.tmp

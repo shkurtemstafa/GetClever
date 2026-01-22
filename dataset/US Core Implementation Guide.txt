@@ -1,0 +1,2402 @@
+US Core Implementation Guide
+Home
+Official URL: http://hl7.org/fhir/us/core/ImplementationGuide/hl7.fhir.us.core	Version: 8.0.1
+IG Standards status: Trial-use	Maturity Level: 3	Computable Name: USCore
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+Introduction
+This guide and the US Core profiles have become the foundation for US Realm FHIR implementation guides. This annual release reflects changes to U.S. Core Data for Interoperability (USCDI) and comments and requests from the US Realm FHIR community. (The US Core Roadmap page outlines this approach to yearly updates.) US Core has benefitted from testing and guidance by the Argonaut Project Team. Their feedback continues to lay the groundwork for documenting the US Core Profile design, interactions, requirements, and guidelines for patient data access and Assistant Secretary for Technology Policy (ASTP) Certification testing. Under the guidance of HL7 and the HL7 US Realm Steering Committee, the content will expand in future versions to meet the needs specific to the US Realm.
+
+The US Core Implementation Guide is based on FHIR Version R4. It defines the minimum constraints on the FHIR resources to create the US Core Profiles. The elements, extensions, vocabularies, and value sets that SHALL be present are identified, and how they are used is defined. It also documents the minimum FHIR RESTful interactions for each US Core Profiles to access patient data. Establishing the "floor" of standards to promote interoperability and adoption through common implementation allows for further standards development evolution for specific use cases. There are two different ways to implement US Core:
+
+Profile Only Support: Systems may support only the US Core Profiles to represent clinical information.
+Profile Support + Interaction Support: Systems may support both the US Core Profile content structure and the RESTful interactions defined for a resource.
+For a detailed description of these different usages of US Core, see the Conformance Requirements page.
+
+Background
+The US Core requirements were initially developed, balloted, and published in FHIR DSTU2 as part of the Office of the National Coordinator for Health Information Technology (ONC) sponsored Data Access Framework (DAF) project. The Argonaut Data Query Implementation Guide superseded DAF and documented security and authorization and the querying of the 2015 Edition Common Clinical Data Set (CCDS) and static documents. US Core descended directly from the Argonaut guide to support FHIR Version STU3 and eventually FHIR R4 and the ASTP/ONC U.S. Core Data for Interoperability (USCDI). Refer to the USCDI page which maps the US Core versions and profiles to the USCDI versions and Data Elements.
+
+How To Read This Guide
+This Guide is divided into several pages, which are listed at the top of each page in the menu bar.
+
+Home: The home page provides the introduction and background for US Core.
+Conformance: These pages describe the set of rules to claim conformance to this guide
+General Requirements: This page defines requirements common to all actors and profiles used in this guide, including how CapabilityStatements are used to claim conformance.
+Must Support: This page defines the expectations for mandatory and Must Support elements in the US Core Profiles.
+Guidance: The Guidance pages document best practices and how to use the profiles and transactions defined in this guide.
+USCDI: This page maps the US Core Profiles to the (USCDI) data classes and data elements.
+General Guidance: This page provides guidance, definitions, and requirements common to all actors and profiles used in this guide.
+Clinical Notes: This page provides guidance on the interactions between Consumers and Producers of clinical notes.
+Medication List: This page provides guidance on how a patient or provider can access a patient's medications.
+Basic Provenance: This page provides implementers with important definitions to create and share the Provenance Resource.
+Screening and Assessments: This page documents how US Core Profiles are used to represent screenings and assessments for patient health status
+Changes Between Versions: This page considers the user and developer experience when transitioning between versions of US Core and documents the changes between versions.
+FHIR Artifacts: These pages provide detailed descriptions and formal definitions for all the FHIR objects defined in this guide.
+Profiles and Extensions: This page lists the US Core Profiles and Extensions defined in this guide to exchange quality data.
+Each US Core Profile page includes a narrative description that lists all the Mandatory and Must Support data elements, profile-specific implementation guidance, and formal definitions. A "Quick Start" guide summarizes the supported search transactions for each profile. Although the guidance typically focuses on the profiled elements, it also may cover un-profiled elements to aid with implementation and certification.
+Search Parameters and Operations: This page lists the defined US Core Operations and Search Parameters used in US Core transactions.
+Terminology: This page lists the US Core ValueSets, and CodeSystems defined for the profiles.
+Capability Statements: These pages define the expected FHIR capabilities of the US Core Servers and Clients.
+Security: This page documents the general security requirements and recommendations for actors.
+Examples: This page lists all the examples used in this guide. These examples show what data produced and consumed by systems conforming with this implementation guide might look like. Every effort has been made to ensure that the examples are correct and useful, but they are not a normative part of the specification, nor fully representative of real-world examples.
+Downloads: This page provides links to downloadable artifacts.
+Change Log: This page documents the changes across the versions of US Core. It is a vital resource for implementers, developers, and stakeholders to understand the guide’s progression.
+Looking Ahead: These pages provide a preview of the future direction of US Core
+US Core Roadmap: This page outlines the approach to adding new content to US Core.
+Writing Vital Signs: This page documents how to write vital sign Observation using patient- and provider-facing apps.
+Patient Data Feed: This page documents how to use FHIR Subscriptions to be notified when events related to US Core content occur.
+US Core Actors
+The following actors are part of the US Core IG:
+
+US Core Requestor
+A US Core Requester is an application that initiates a data access request to retrieve patient data. The US Core Requestor is the Client in a Client-Server interaction. The terms "US Core Requestor" and "Client" are used interchangeably throughout this guide and are not meant to limit this actor to only patient and provider apps. For example, payers and other users can use the same technology. These terms are a short-hand notation for "user application".
+
+US Core Responder
+A US Core Responder is a system that responds to the data access request providing patient data. The US Core responder is the Server in a Client-Server interaction. The terms "US Core Responder", "Server", and "EHR" are used interchangeably throughout this guide and are not meant to limit this actor to electronic health record systems. For example, HIEs, care coordination platforms, population health systems, etc., can use the same technology. These terms are a short-hand notation for "interoperable healthcare platform".
+
+US Core Profiles
+Below is the list of US Core Profiles. Each profile identifies which core elements, extensions, vocabularies, and ValueSets SHALL be present in the resource when using this profile. Together, they promote interoperability and adoption through common implementation and provide the floor for standards development for specific use cases. See the USCDI page, for a mapping to the U.S. Core Data for Interoperability (USCDI).
+
+A simple narrative summary gives each profile's requirements and guidance. A formal hierarchical table presents a logical view of the content in both a differential and snapshot view, and provides references to appropriate terminologies and examples.
+
+US Core Profile Maturity
+All US Core FHIR conformance and terminology artifacts are assigned a FHIR Maturity Level. The content in this release has been thoroughly reviewed through the HL7 ballot and other processes, implemented, and subject to ASTP certification testing. A FHIR Maturity Level of FMM 3 is assigned to US Core artifacts associated with a USCDI Data Class or Element and subject to regulation and ASTP certification. A FHIR Maturity Level of FMM 2 is assigned to US Core artifacts related to a USCDI Data Class or Element but have not yet been identified in regulation or subject to ASTP certification. All other US Core artifacts have been assigned a FHIR Maturity Level of FMM 3 based upon community review. Refer to the FHIR specification for more information about maturity levels.
+
+AllergyIntolerance
+US Core AllergyIntolerance Profile
+Resource Profile: US Core AllergyIntolerance Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreAllergyIntolerance
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.5
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core AllergyIntolerance Profile inherits from the FHIR AllergyIntolerance resource; refer to it for scope and usage definitions. This profile sets minimum expectations for the AllergyIntolerance resource to record, search, and fetch allergies/adverse reactions associated with a patient. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present and constrains how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for the US Core AllergyIntolerance profile:
+
+Query for Allergies belonging to a Patient
+Record or update a Patient Allergy
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each AllergyIntolerance Must Have:
+
+a clinical status of the allergy (e.g., active or resolved)*
+a code that tells you what the patient is allergic to
+a patient
+Each AllergyIntolerance Must Support:
+
+a verification status
+a reaction manifestation
+Additional USCDI Requirements:
+
+These Additional USCDI Requirements elements are not Mandatory or Must Support but are required for ASTP Health IT certification testing and are included in the formal definition of the profile and the AllergyIntolerance examples.
+
+a recorder*
+*see guidance below
+
+Profile Specific Implementation Guidance:
+
+* The AllergyIntolerance.clinicalStatus element has the following constraints: SHALL be present if verification status is not "entered-in-error" and SHALL NOT be present if verification Status is "entered-in-error".
+No Known Allergies may be represented using the US Core-AllergyIntolerance profile with the appropriate negation code in AllergyIntolerence.code and the appropriate verification status in AllergyIntolerance.verificationStatus.
+
+If a patient has not been asked about their allergies, this would be represented as:
+
+AllergyIntolerance.code = "1631000175102" (Patient not asked (contextual qualifier) (qualifier value))
+AllergyIntolerance.verificationStatus = "unconfirmed" or empty (in other words, then element omitted)
+If a patient has been asked, but has indicated they have no known allergies, this would be represented as:
+
+AllergyIntolerance.code = "716186003" (No known allergy (situation))
+AllergyIntolerance.verificationStatus = "confirmed"
+*The profile elements AllergyIntolerance.asserter and AllergyIntolerance.recorder communicate the individual level provenance author data corresponding to the U.S. Core Data for Interoperability (USCDI) Provenance Author Data Elements.
+Usages:
+
+Examples for this Profile: AllergyIntolerance/example and AllergyIntolerance/non-pharmacologic-agent-example
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Resource Profile: US Core AllergyIntolerance Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreAllergyIntolerance
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.5
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core AllergyIntolerance Profile inherits from the FHIR AllergyIntolerance resource; refer to it for scope and usage definitions. This profile sets minimum expectations for the AllergyIntolerance resource to record, search, and fetch allergies/adverse reactions associated with a patient. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present and constrains how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for the US Core AllergyIntolerance profile:
+
+Query for Allergies belonging to a Patient
+Record or update a Patient Allergy
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each AllergyIntolerance Must Have:
+
+a clinical status of the allergy (e.g., active or resolved)*
+a code that tells you what the patient is allergic to
+a patient
+Each AllergyIntolerance Must Support:
+
+a verification status
+a reaction manifestation
+Additional USCDI Requirements:
+
+These Additional USCDI Requirements elements are not Mandatory or Must Support but are required for ASTP Health IT certification testing and are included in the formal definition of the profile and the AllergyIntolerance examples.
+
+a recorder*
+*see guidance below
+
+Profile Specific Implementation Guidance:
+
+* The AllergyIntolerance.clinicalStatus element has the following constraints: SHALL be present if verification status is not "entered-in-error" and SHALL NOT be present if verification Status is "entered-in-error".
+No Known Allergies may be represented using the US Core-AllergyIntolerance profile with the appropriate negation code in AllergyIntolerence.code and the appropriate verification status in AllergyIntolerance.verificationStatus.
+
+If a patient has not been asked about their allergies, this would be represented as:
+
+AllergyIntolerance.code = "1631000175102" (Patient not asked (contextual qualifier) (qualifier value))
+AllergyIntolerance.verificationStatus = "unconfirmed" or empty (in other words, then element omitted)
+If a patient has been asked, but has indicated they have no known allergies, this would be represented as:
+
+AllergyIntolerance.code = "716186003" (No known allergy (situation))
+AllergyIntolerance.verificationStatus = "confirmed"
+*The profile elements AllergyIntolerance.asserter and AllergyIntolerance.recorder communicate the individual level provenance author data corresponding to the U.S. Core Data for Interoperability (USCDI) Provenance Author Data Elements.
+Usages:
+
+Examples for this Profile: AllergyIntolerance/example and AllergyIntolerance/non-pharmacologic-agent-example
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+The data elements list has changed
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. AllergyIntolerance	C	0..*	AllergyIntolerance	Allergy or Intolerance (generally: Risk of adverse reaction to a substance)
+Constraints: ait-1, ait-2
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... clinicalStatus	?!SΣC	0..1	CodeableConcept	active | inactive | resolved
+Binding: AllergyIntoleranceClinicalStatusCodes (required)
+... verificationStatus	?!SΣC	0..1	CodeableConcept	unconfirmed | confirmed | refuted | entered-in-error
+Binding: AllergyIntoleranceVerificationStatusCodes (required)
+... code	SΣ	1..1	CodeableConcept	Code that identifies the allergy or intolerance
+Binding: Common substances for allergy and intolerance documentation including refutations . (extensible)
+... patient	SΣ	1..1	Reference(US Core Patient Profile)	Who the sensitivity is for
+... recorder		0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the sensitivity
+... reaction	S	0..*	BackboneElement	Adverse Reaction Events linked to exposure to substance
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... manifestation	S	1..*	CodeableConcept	Clinical symptoms/signs associated with the Event
+Binding: SNOMEDCTClinicalFindings (extensible)
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+AllergyIntolerance.clinicalStatus	Base	required	AllergyIntolerance Clinical Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.verificationStatus	Base	required	AllergyIntolerance Verification Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.code	Base	extensible	Common substances for allergy and intolerance documentation including refutations  .	📦20240625	VSAC v0.24
+AllergyIntolerance.reaction.​manifestation	Base	extensible	SNOMED CT Clinical Findings 	📦4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+ait-1	error	AllergyIntolerance	AllergyIntolerance.clinicalStatus SHALL be present if verificationStatus is not entered-in-error.	verificationStatus.coding.where(system = 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification' and code = 'entered-in-error').exists() or clinicalStatus.exists()
+ait-2	error	AllergyIntolerance	AllergyIntolerance.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system = 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification' and code = 'entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	AllergyIntolerance	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	AllergyIntolerance	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	AllergyIntolerance	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	AllergyIntolerance	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	AllergyIntolerance	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+Differential View
+
+This structure is derived from AllergyIntolerance
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. AllergyIntolerance		0..*	AllergyIntolerance	Allergy or Intolerance (generally: Risk of adverse reaction to a substance)
+... clinicalStatus	S	0..1	CodeableConcept	active | inactive | resolved
+Binding: AllergyIntoleranceClinicalStatusCodes (required)
+... verificationStatus	S	0..1	CodeableConcept	unconfirmed | confirmed | refuted | entered-in-error
+Binding: AllergyIntoleranceVerificationStatusCodes (required)
+... code	S	1..1	CodeableConcept	Code that identifies the allergy or intolerance
+Binding: Common substances for allergy and intolerance documentation including refutations . (extensible)
+... patient	S	1..1	Reference(US Core Patient Profile)	Who the sensitivity is for
+... recorder		0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the sensitivity
+... reaction	S	0..*	BackboneElement	Adverse Reaction Events linked to exposure to substance
+.... manifestation	S	1..*	CodeableConcept	Clinical symptoms/signs associated with the Event
+Binding: SNOMEDCTClinicalFindings (extensible)
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+AllergyIntolerance.clinicalStatus	Base	required	AllergyIntolerance Clinical Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.verificationStatus	Base	required	AllergyIntolerance Verification Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.code	Base	extensible	Common substances for allergy and intolerance documentation including refutations  .	📦20240625	VSAC v0.24
+AllergyIntolerance.reaction.​manifestation	Base	extensible	SNOMED CT Clinical Findings 	📦4.0.1	FHIR Std.
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. AllergyIntolerance	C	0..*	AllergyIntolerance	Allergy or Intolerance (generally: Risk of adverse reaction to a substance)
+Constraints: ait-1, ait-2
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	Σ	0..1	Meta	Metadata about the resource
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text		0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+... contained		0..*	Resource	Contained, inline Resources
+... extension		0..*	Extension	Additional content defined by implementations
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... identifier	Σ	0..*	Identifier	External ids for this item
+... clinicalStatus	?!SΣC	0..1	CodeableConcept	active | inactive | resolved
+Binding: AllergyIntoleranceClinicalStatusCodes (required)
+... verificationStatus	?!SΣC	0..1	CodeableConcept	unconfirmed | confirmed | refuted | entered-in-error
+Binding: AllergyIntoleranceVerificationStatusCodes (required)
+... type	Σ	0..1	code	allergy | intolerance - Underlying mechanism (if known)
+Binding: AllergyIntoleranceType (required): Identification of the underlying physiological mechanism for a Reaction Risk.
+... category	Σ	0..*	code	food | medication | environment | biologic
+Binding: AllergyIntoleranceCategory (required): Category of an identified substance associated with allergies or intolerances.
+... criticality	Σ	0..1	code	low | high | unable-to-assess
+Binding: AllergyIntoleranceCriticality (required): Estimate of the potential clinical harm, or seriousness, of a reaction to an identified substance.
+... code	SΣ	1..1	CodeableConcept	Code that identifies the allergy or intolerance
+Binding: Common substances for allergy and intolerance documentation including refutations . (extensible)
+... patient	SΣ	1..1	Reference(US Core Patient Profile)	Who the sensitivity is for
+... encounter		0..1	Reference(Encounter)	Encounter when the allergy or intolerance was asserted
+... onset[x]		0..1		When allergy or intolerance was identified
+.... onsetDateTime			dateTime	
+.... onsetAge			Age	
+.... onsetPeriod			Period	
+.... onsetRange			Range	
+.... onsetString			string	
+... recordedDate		0..1	dateTime	Date first version of the resource instance was recorded
+... recorder		0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the sensitivity
+... asserter	Σ	0..1	Reference(Patient | RelatedPerson | Practitioner | PractitionerRole)	Source of the information about the allergy
+... lastOccurrence		0..1	dateTime	Date(/time) of last known occurrence of a reaction
+... note		0..*	Annotation	Additional text not captured in other fields
+... reaction	S	0..*	BackboneElement	Adverse Reaction Events linked to exposure to substance
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... substance		0..1	CodeableConcept	Specific substance or pharmaceutical product considered to be responsible for event
+Binding: SubstanceCode (example): Codes defining the type of the substance (including pharmaceutical products).
+.... manifestation	S	1..*	CodeableConcept	Clinical symptoms/signs associated with the Event
+Binding: SNOMEDCTClinicalFindings (extensible)
+.... description		0..1	string	Description of the event as a whole
+.... onset		0..1	dateTime	Date(/time) when manifestations showed
+.... severity		0..1	code	mild | moderate | severe (of event as a whole)
+Binding: AllergyIntoleranceSeverity (required): Clinical assessment of the severity of a reaction event as a whole, potentially considering multiple different manifestations.
+.... exposureRoute		0..1	CodeableConcept	How the subject was exposed to the substance
+Binding: SNOMEDCTRouteCodes (example): A coded concept describing the route or physiological path of administration of a therapeutic agent into or onto the body of a subject.
+.... note		0..*	Annotation	Text about event not captured in other fields
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+AllergyIntolerance.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+AllergyIntolerance.clinicalStatus	Base	required	AllergyIntolerance Clinical Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.verificationStatus	Base	required	AllergyIntolerance Verification Status Codes 	📦4.0.1	FHIR Std.
+AllergyIntolerance.type	Base	required	AllergyIntoleranceType 	📍4.0.1	FHIR Std.
+AllergyIntolerance.category	Base	required	AllergyIntoleranceCategory 	📍4.0.1	FHIR Std.
+AllergyIntolerance.criticality	Base	required	AllergyIntoleranceCriticality 	📍4.0.1	FHIR Std.
+AllergyIntolerance.code	Base	extensible	Common substances for allergy and intolerance documentation including refutations  .	📦20240625	VSAC v0.24
+AllergyIntolerance.reaction.​substance	Base	example	Substance Code 	📍4.0.1	FHIR Std.
+AllergyIntolerance.reaction.​manifestation	Base	extensible	SNOMED CT Clinical Findings 	📦4.0.1	FHIR Std.
+AllergyIntolerance.reaction.​severity	Base	required	AllergyIntoleranceSeverity 	📍4.0.1	FHIR Std.
+AllergyIntolerance.reaction.​exposureRoute	Base	example	SNOMED CT Route Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+ait-1	error	AllergyIntolerance	AllergyIntolerance.clinicalStatus SHALL be present if verificationStatus is not entered-in-error.	verificationStatus.coding.where(system = 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification' and code = 'entered-in-error').exists() or clinicalStatus.exists()
+ait-2	error	AllergyIntolerance	AllergyIntolerance.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system = 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification' and code = 'entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	AllergyIntolerance	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	AllergyIntolerance	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	AllergyIntolerance	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	AllergyIntolerance	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	AllergyIntolerance	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+This structure is derived from AllergyIntolerance
+
+Summary
+
+Mandatory: 1 element
+Must-Support: 6 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Practitioner Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to allergy and intolerance data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/AllergyIntolerance.rs
+Mandatory Search Parameters:
+The following search parameters and search parameter combinations SHALL be supported:
+
+SHALL support searching for all allergies for a patient using the patient search parameter:
+
+GET [base]/AllergyIntolerance?patient={Type/}[id]
+
+Example:
+
+GET [base]/AllergyIntolerance?patient=1137192
+Implementation Notes: Fetches a bundle of all AllergyIntolerance resources for the specified patient (how to search by reference)
+
+Optional Search Parameters:
+The following search parameter combinations SHOULD be supported:
+
+SHOULD support searching using the combination of the patient and clinical-status search parameters:
+
+GET [base]/AllergyIntolerance?patient={Type/}[id]&clinical-status={system|}[code]
+
+Example:
+GET [base]/AllergyIntolerance?patient=[id]&clinical-status=http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical|active
+Implementation Notes: Fetches a bundle of all AllergyIntolerance resources for the specified patient and status code. This will not return any "entered in error" resources because of the conditional presence of the clinicalStatus element. (how to search by reference and how to search by token)
+
+
+
+AllergyIntolerance
+US Core AllergyIntolerance Profile
+CarePlan
+US Core CarePlan Profile
+CareTeam
+US Core CareTeam Profile
+Condition
+US Core Condition Encounter Diagnosis Profile
+US Core Condition Problems and Health Concerns Profile
+Coverage
+US Core Coverage Profile
+Device
+US Core Implantable Device Profile
+DiagnosticReport
+US Core DiagnosticReport Profile for Laboratory Results Reporting
+US Core DiagnosticReport Profile for Report and Note Exchange
+DocumentReference
+US Core ADI DocumentReference Profile
+US Core DocumentReference Profile
+Encounter
+US Core Encounter Profile
+Goal
+US Core Goal Profile
+Immunization
+US Core Immunization Profile
+Location
+US Core Location Profile
+Medication
+US Core Medication Profile
+MedicationDispense
+US Core MedicationDispense Profile
+MedicationRequest
+US Core MedicationRequest Profile
+Observation
+US Core Average Blood Pressure Profile
+US Core Care Experience Preference Profile
+US Core Observation ADI Documentation Profile
+US Core Observation Clinical Result Profile
+US Core Laboratory Result Observation Profile
+US Core Observation Occupation Profile
+US Core Observation Pregnancy Intent Profile
+US Core Observation Pregnancy Status Profile
+US Core Observation Screening Assessment Profile
+US Core Observation Sexual Orientation Profile
+US Core Simple Observation Profile
+US Core Smoking Status Observation Profile
+US Core Treatment Intervention Preference Profile
+US Core Vital Signs Profile
+US Core Pediatric BMI for Age Observation Profile
+US Core Pediatric Weight for Height Observation Profile
+US Core Blood Pressure Profile
+US Core BMI Profile
+US Core Body Height Profile
+US Core Body Temperature Profile
+US Core Body Weight Profile
+US Core Head Circumference Profile
+US Core Heart Rate Profile
+US Core Pulse Oximetry Profile
+US Core Respiratory Rate Profile
+US Core Pediatric Head Occipital Frontal Circumference Percentile Profile
+Organization
+US Core Organization Profile
+Patient
+US Core Patient Profile
+Practitioner
+US Core Practitioner Profile
+PractitionerRole
+US Core PractitionerRole Profile
+Procedure
+US Core Procedure Profile
+Provenance
+US Core Provenance Profile
+QuestionnaireResponse
+US Core QuestionnaireResponse Profile
+RelatedPerson
+US Core RelatedPerson Profile
+ServiceRequest
+US Core ServiceRequest Profile
+Specimen
+US Core Specimen Profile
+US Core FHIR RESTful interactions
+For systems that support the US Core Profile content structure and the RESTful interactions defined for a resource, the requirements are formally defined in the US Core CapabilityStatements. In addition, each profile page has a Quick Start Section that documents the required FHIR RESTful search and read operations. These sections demonstrate how to access a patient's clinical and administrative data:
+
+Example of a simple FHIR RESTful Search Transaction
+basic_fhir_restful_interaction.svg
+
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each CarePlan Must Have:
+
+a status
+a category
+an intent
+a patient
+Each CarePlan Must Support:
+
+a narrative summary of the patient assessment and plan of treatment*
+a category code of "assess-plan"
+Additional USCDI Requirements:
+
+These Additional USCDI Requirements elements are not Mandatory or Must Support but are required for ASTP Health IT certification testing and are included in the formal definition of the profile and the CarePlan examples.
+
+a contributor*
+*see guidance below
+
+Profile Specific Implementation Guidance:
+
+*The original Assessment and Plan design in the CarePlan was to support the "Assessment and Plan" from a narrative Progress Note. Systems have advanced significantly since the introduction of this requirement in 2015. Relaxing this to 0..1 allows more sophisticated systems to discretely encode a CarePlan instead of providing the narrative portion.
+Additional considerations for systems aligning with HL7 Consolidated (C-CDA) Care Plan requirements:
+US Core Goal SHOULD be present in CarePlan.goal
+US Core Condition SHOULD be present in CarePlan.addresses
+Assessment and Plan MAY be included as narrative in CarePlan.text
+As an alternative to the US Core CarePlan, Assessment and Plan of Treatment may be included in various types of Clinical Notes, such as Progress Notes, History & Physical (H&P), Discharge Summaries, etc.
+*The profile element CarePlan.contributor communicates the individual level provenance author data corresponding to the U.S. Core Data for Interoperability (USCDI) Provenance Author Data Elements.
+Usages:
+
+Refer to this Profile: US Core Procedure Profile
+Examples for this Profile: CarePlan/colonoscopy
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+The data elements list has changed
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CarePlan		0..*	CarePlan	Healthcare plan for patient or group
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... text	S	0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+.... status	S	1..1	code	generated | additional
+Binding: US Core Narrative Status (required): Constrained value set of narrative statuses.
+.... div	SC	1..1	xhtml	Limited xhtml content
+Constraints: txt-1, txt-2
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... status	?!SΣ	1..1	code	draft | active | on-hold | revoked | completed | entered-in-error | unknown
+Binding: RequestStatus (required): Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
+... intent	?!SΣ	1..1	code	proposal | plan | order | option
+Binding: CarePlanIntent (required): Codes indicating the degree of authority/intentionality associated with a care plan
+... Slices for category	SΣ	1..*	CodeableConcept	Type of plan
+Slice: Unordered, Open by value:$this
+Binding: CarePlanCategory (example): Identifies what "kind" of plan this is to support differentiation between multiple co-existing plans; e.g. "Home health", "psychiatric", "asthma", "disease management", etc.
+.... category:AssessPlan	SΣ	0..1	CodeableConcept	Type of plan
+Binding: CarePlanCategory (example): Identifies what "kind" of plan this is to support differentiation between multiple co-existing plans; e.g. "Home health", "psychiatric", "asthma", "disease management", etc.
+
+Required Pattern: At least the following
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category
+...... version		0..1	string	Version of the system - if relevant
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: assess-plan
+...... display		0..1	string	Representation defined by the system
+...... userSelected		0..1	boolean	If this coding was chosen directly by the user
+..... text		0..1	string	Plain text representation of the concept
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who the care plan is for
+... contributor		0..*	Reference(US Core Practitioner Profile | US Core Organization Profile | US Core Patient Profile | PractitionerRole | US Core CareTeam Profile | US Core RelatedPerson Profile | Device)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who provided the content of the care plan
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+CarePlan.text.status	Base	required	US Core Narrative Status 	📦8.0.1	This IG
+CarePlan.status	Base	required	RequestStatus 	📦4.0.1	FHIR Std.
+CarePlan.intent	Base	required	Care Plan Intent 	📦4.0.1	FHIR Std.
+CarePlan.category	Base	example	Care Plan Category 	📍4.0.1	FHIR Std.
+CarePlan.category:AssessPlan	Base	example	Care Plan Category 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+dom-2	error	CarePlan	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	CarePlan	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	CarePlan	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	CarePlan	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	CarePlan	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+txt-1	error	CarePlan.text.div	The narrative SHALL contain only the basic html formatting elements and attributes described in chapters 7-11 (except section 4 of chapter 9) and 15 of the HTML 4.0 standard, <a> elements (either name or href), images and internally contained style attributes	htmlChecks()
+txt-2	error	CarePlan.text.div	The narrative SHALL have some non-whitespace content	htmlChecks()
+Differential View
+
+This structure is derived from CarePlan
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CarePlan		0..*	CarePlan	Healthcare plan for patient or group
+... text	S	0..1	Narrative	Text summary of the resource, for human interpretation
+.... status	S	1..1	code	generated | additional
+Binding: US Core Narrative Status (required): Constrained value set of narrative statuses.
+.... div	S	1..1	xhtml	Limited xhtml content
+... status	S	1..1	code	draft | active | on-hold | revoked | completed | entered-in-error | unknown
+Binding: RequestStatus (required): Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
+... intent	S	1..1	code	proposal | plan | order | option
+Binding: CarePlanIntent (required): Codes indicating the degree of authority/intentionality associated with a care plan
+... Slices for category	S	1..*	CodeableConcept	Type of plan
+Slice: Unordered, Open by value:$this
+.... category:AssessPlan	S	0..1	CodeableConcept	Type of plan
+Required Pattern: At least the following
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: assess-plan
+... subject	S	1..1	Reference(US Core Patient Profile S | Group)	Who the care plan is for
+... contributor		0..*	Reference(US Core Practitioner Profile | US Core Organization Profile | US Core Patient Profile | PractitionerRole | US Core CareTeam Profile | US Core RelatedPerson Profile | Device)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who provided the content of the care plan
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+CarePlan.text.status	Base	required	US Core Narrative Status 	📦8.0.1	This IG
+CarePlan.status	Base	required	RequestStatus 	📦4.0.1	FHIR Std.
+CarePlan.intent	Base	required	Care Plan Intent 	📦4.0.1	FHIR Std.
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CarePlan		0..*	CarePlan	Healthcare plan for patient or group
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	Σ	0..1	Meta	Metadata about the resource
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text	S	0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+Slice: Unordered, Open by value:url
+.... status	S	1..1	code	generated | additional
+Binding: US Core Narrative Status (required): Constrained value set of narrative statuses.
+.... div	SC	1..1	xhtml	Limited xhtml content
+Constraints: txt-1, txt-2
+... contained		0..*	Resource	Contained, inline Resources
+... extension		0..*	Extension	Additional content defined by implementations
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... identifier	Σ	0..*	Identifier	External Ids for this plan
+... instantiatesCanonical	Σ	0..*	canonical(PlanDefinition | Questionnaire | Measure | ActivityDefinition | OperationDefinition)	Instantiates FHIR protocol or definition
+... instantiatesUri	Σ	0..*	uri	Instantiates external protocol or definition
+... basedOn	Σ	0..*	Reference(CarePlan)	Fulfills CarePlan
+... replaces	Σ	0..*	Reference(CarePlan)	CarePlan replaced by this CarePlan
+... partOf	Σ	0..*	Reference(CarePlan)	Part of referenced CarePlan
+... status	?!SΣ	1..1	code	draft | active | on-hold | revoked | completed | entered-in-error | unknown
+Binding: RequestStatus (required): Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
+... intent	?!SΣ	1..1	code	proposal | plan | order | option
+Binding: CarePlanIntent (required): Codes indicating the degree of authority/intentionality associated with a care plan
+... Slices for category	SΣ	1..*	CodeableConcept	Type of plan
+Slice: Unordered, Open by value:$this
+Binding: CarePlanCategory (example): Identifies what "kind" of plan this is to support differentiation between multiple co-existing plans; e.g. "Home health", "psychiatric", "asthma", "disease management", etc.
+.... category:AssessPlan	SΣ	0..1	CodeableConcept	Type of plan
+Binding: CarePlanCategory (example): Identifies what "kind" of plan this is to support differentiation between multiple co-existing plans; e.g. "Home health", "psychiatric", "asthma", "disease management", etc.
+
+Required Pattern: At least the following
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category
+...... version		0..1	string	Version of the system - if relevant
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: assess-plan
+...... display		0..1	string	Representation defined by the system
+...... userSelected		0..1	boolean	If this coding was chosen directly by the user
+..... text		0..1	string	Plain text representation of the concept
+... title	Σ	0..1	string	Human-friendly name for the care plan
+... description	Σ	0..1	string	Summary of nature of plan
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who the care plan is for
+... encounter	Σ	0..1	Reference(Encounter)	Encounter created as part of
+... period	Σ	0..1	Period	Time period plan covers
+... created	Σ	0..1	dateTime	Date record was first recorded
+... author	Σ	0..1	Reference(Patient | Practitioner | PractitionerRole | Device | RelatedPerson | Organization | CareTeam)	Who is the designated responsible party
+... contributor		0..*	Reference(US Core Practitioner Profile | US Core Organization Profile | US Core Patient Profile | PractitionerRole | US Core CareTeam Profile | US Core RelatedPerson Profile | Device)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who provided the content of the care plan
+... careTeam		0..*	Reference(CareTeam)	Who's involved in plan?
+... addresses	Σ	0..*	Reference(Condition)	Health issues this plan addresses
+... supportingInfo		0..*	Reference(Resource)	Information considered as part of plan
+... goal		0..*	Reference(Goal)	Desired outcome of plan
+... activity	C	0..*	BackboneElement	Action to occur as part of plan
+Constraints: cpl-3
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... outcomeCodeableConcept		0..*	CodeableConcept	Results of the activity
+Binding: CarePlanActivityOutcome (example): Identifies the results of the activity.
+.... outcomeReference		0..*	Reference(Resource)	Appointment, Encounter, Procedure, etc.
+.... progress		0..*	Annotation	Comments about the activity status/progress
+.... reference	C	0..1	Reference(Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription | RequestGroup)	Activity details defined in specific resource
+.... detail	C	0..1	BackboneElement	In-line definition of activity
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... kind		0..1	code	Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription
+Binding: CarePlanActivityKind (required): Resource types defined as part of FHIR that can be represented as in-line definitions of a care plan activity.
+..... instantiatesCanonical		0..*	canonical(PlanDefinition | ActivityDefinition | Questionnaire | Measure | OperationDefinition)	Instantiates FHIR protocol or definition
+..... instantiatesUri		0..*	uri	Instantiates external protocol or definition
+..... code		0..1	CodeableConcept	Detail type of activity
+Binding: ProcedureCodes(SNOMEDCT) (example): Detailed description of the type of activity; e.g. What lab test, what procedure, what kind of encounter.
+..... reasonCode		0..*	CodeableConcept	Why activity should be done or why activity was prohibited
+Binding: SNOMEDCTClinicalFindings (example): Identifies why a care plan activity is needed. Can include any health condition codes as well as such concepts as "general wellness", prophylaxis, surgical preparation, etc.
+..... reasonReference		0..*	Reference(Condition | Observation | DiagnosticReport | DocumentReference)	Why activity is needed
+..... goal		0..*	Reference(Goal)	Goals this activity relates to
+..... status	?!	1..1	code	not-started | scheduled | in-progress | on-hold | completed | cancelled | stopped | unknown | entered-in-error
+Binding: CarePlanActivityStatus (required): Codes that reflect the current state of a care plan activity within its overall life cycle.
+..... statusReason		0..1	CodeableConcept	Reason for current status
+..... doNotPerform	?!	0..1	boolean	If true, activity is prohibiting action
+..... scheduled[x]		0..1		When activity is to occur
+...... scheduledTiming			Timing	
+...... scheduledPeriod			Period	
+...... scheduledString			string	
+..... location		0..1	Reference(Location)	Where it should happen
+..... performer		0..*	Reference(Practitioner | PractitionerRole | Organization | RelatedPerson | Patient | CareTeam | HealthcareService | Device)	Who will be responsible?
+..... product[x]		0..1		What is to be administered/supplied
+Binding: SNOMEDCTMedicationCodes (example): A product supplied or administered as part of a care plan activity.
+...... productCodeableConcept			CodeableConcept	
+...... productReference			Reference(Medication | Substance)	
+..... dailyAmount		0..1	SimpleQuantity(4.0.1)	How to consume/day?
+..... quantity		0..1	SimpleQuantity(4.0.1)	How much to administer/supply/consume
+..... description		0..1	string	Extra info describing activity to perform
+... note		0..*	Annotation	Comments about the plan
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+CarePlan.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+CarePlan.text.status	Base	required	US Core Narrative Status 	📦8.0.1	This IG
+CarePlan.status	Base	required	RequestStatus 	📦4.0.1	FHIR Std.
+CarePlan.intent	Base	required	Care Plan Intent 	📦4.0.1	FHIR Std.
+CarePlan.category	Base	example	Care Plan Category 	📍4.0.1	FHIR Std.
+CarePlan.category:AssessPlan	Base	example	Care Plan Category 	📍4.0.1	FHIR Std.
+CarePlan.activity.outcomeCodeableConcept	Base	example	Care Plan Activity Outcome 	📍4.0.1	FHIR Std.
+CarePlan.activity.detail.​kind	Base	required	Care Plan Activity Kind 	📍4.0.1	FHIR Std.
+CarePlan.activity.detail.​code	Base	example	Procedure Codes (SNOMED CT) 	📍4.0.1	FHIR Std.
+CarePlan.activity.detail.​reasonCode	Base	example	SNOMED CT Clinical Findings 	📍4.0.1	FHIR Std.
+CarePlan.activity.detail.​status	Base	required	CarePlanActivityStatus 	📍4.0.1	FHIR Std.
+CarePlan.activity.detail.​product[x]	Base	example	SNOMED CT Medication Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+cpl-3	error	CarePlan.activity	Provide a reference or detail, not both	detail.empty() or reference.empty()
+dom-2	error	CarePlan	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	CarePlan	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	CarePlan	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	CarePlan	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	CarePlan	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+txt-1	error	CarePlan.text.div	The narrative SHALL contain only the basic html formatting elements and attributes described in chapters 7-11 (except section 4 of chapter 9) and 15 of the HTML 4.0 standard, <a> elements (either name or href), images and internally contained style attributes	htmlChecks()
+txt-2	error	CarePlan.text.div	The narrative SHALL have some non-whitespace content	htmlChecks()
+This structure is derived from CarePlan
+
+Summary
+
+Mandatory: 1 element
+Must-Support: 8 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Practitioner Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner)
+US Core Organization Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization)
+US Core CareTeam Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-careteam)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Slices
+
+This structure defines the following Slices:
+
+The element 1 is sliced based on the value of CarePlan.category
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to care plan data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/CarePlan.rs
+Mandatory Search Parameters:
+The following search parameters and search parameter combinations SHALL be supported:
+
+SHALL support searching using the combination of the patient and category search parameters:
+
+GET [base]/CarePlan?patient={Type/}[id]&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan
+
+Example:
+
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan
+Implementation Notes: Fetches a bundle of all CarePlan resources for the specified patient and category=assess-plan (how to search by reference and how to search by token)
+
+Optional Search Parameters:
+The following search parameter combinations SHOULD be supported:
+
+SHOULD support searching using the combination of the patient and category and date search parameters:
+including support for these date comparators: gt,lt,ge,le
+including optional support for AND search on date (e.g.date=[date]&date=[date]]&...)
+GET [base]/CarePlan?patient={Type/}[id]&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&date={gt|lt|ge|le}[date]{&date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&date=ge2019-01-01T00:00:00Z
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&date=ge2018-01-01T00:00:00Z&date=le2019-01-01T00:00:00Z
+Implementation Notes: Fetches a bundle of all CarePlan resources for the specified patient and category=assess-plan and date (how to search by reference and how to search by token and how to search by date)
+
+SHOULD support searching using the combination of the patient and category and status search parameters:
+including support for OR search on status (e.g.status={system|}[code],{system|}[code],...)
+GET [base]/CarePlan?patient={Type/}[id]&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&status={system|}[code]{,{system|}[code],...}
+
+Example:
+
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&status=active
+Implementation Notes: Fetches a bundle of all CarePlan resources for the specified patient and category=assess-plan and status=active (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and category and status and date search parameters:
+including support for OR search on status (e.g.status={system|}[code],{system|}[code],...)
+including support for these date comparators: gt,lt,ge,le
+including optional support for AND search on date (e.g.date=[date]&date=[date]]&...)
+GET [base]/CarePlan?patient={Type/}[id]&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&status={system|}[code]{,{system|}[code],...}&date={gt|lt|ge|le}[date]{&date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&status=active&date=ge2019-01-01T00:00:00Z
+GET [base]/CarePlan?patient=1137192&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan&status=active&date=ge2018-01-01T00:00:00Z&date=le2019-01-01T00:00:00Z
+Implementation Notes: Fetches a bundle of all CarePlan resources for the specified patient and category=assess-plan and status=active and date (how to search by reference and how to search by token and how to search by date)
+
+
+Resource Profile: US Core CareTeam Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-careteam	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreCareTeam
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.16
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core CareTeam Profile inherits from the FHIR CareTeam resource; refer to it for scope and usage definitions. This profile sets minimum expectations for the CareTeam resource for identifying the Care Team members associated with a patient to promote interoperability and adoption through common implementation. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present in the resource and how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for this profile:
+
+Query for a Patient's CareTeam
+Record or update a Patient's CareTeam
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each CareTeam Must Have:
+
+a patient
+a participant role for each careteam member
+a reference to each careteam member, which can be:
+a practitioner or practitioner type (doctor, nurse, therapist)*
+a relative, friend, or guardian
+*See below for how practitioner members are represented in this Profile.
+
+Each CareTeam Must Support:
+
+a status code
+Profile Specific Implementation Guidance:
+
+In order to access care team member's names, identifiers, locations, and contact information, the CareTeam profile supports several types of care team participants. They are represented as references to other profiles and include the following three profiles, which are marked as Must Support:
+
+US Core Practitioner Profile
+US Core PractitionerRole Profile
+US Core RelatedPerson Profile
+Although both US Core Practitioner Profile and US Core PractitionerRole are Must Support, the Server system is not required to support references to both, but SHALL support at least one of them.
+The Client application SHALL support all three profile references.
+Because the US Core PractitionerRole Profile supplies the provider's location and contact information and a reference to the Practitioner, Server systems SHOULD reference it instead of the US Core Practitioner Profile. The quick start section below shows an example of how to access the practitioner name and identifier.
+Servers that support only US Core Practitioner Profile and do not support the US Core PractitionerRole Profile SHALL provide implementation-specific guidance on how to access a provider's location and contact information using only the Practitioner resource.
+Usages:
+
+Refer to this Profile: US Core Average Blood Pressure Profile, US Core Care Experience Preference Profile, US Core CarePlan Profile, US Core CareTeam Profile... Show 12 more
+Examples for this Profile: US-Core example CareTeam and US-Core example CareTeam
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+No changes
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CareTeam		0..*	CareTeam	Planned participants in the coordination and delivery of care for a patient or group
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... status	?!SΣ	0..1	code	proposed | active | suspended | inactive | entered-in-error
+Binding: CareTeamStatus (required): Indicates whether the team is current , represents future intentions or is now a historical record.
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who care team is for
+... participant	SC	1..*	BackboneElement	Members of the team
+Constraints: ctm-1
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... role	SΣ	1..1	CodeableConcept	Type of involvement
+Binding: Care Team Member Function . (extensible): Indicates specific responsibility of an individual within the care team, such as Primary physician, Team coordinator, Caregiver, etc.
+.... member	SΣ	1..1	Reference(US Core Practitioner Profile S | US Core Organization Profile | US Core Patient Profile | US Core PractitionerRole Profile S | US Core CareTeam Profile | US Core RelatedPerson Profile S)	Who is involved
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+CareTeam.status	Base	required	CareTeamStatus 	📦4.0.1	FHIR Std.
+CareTeam.participant.​role	Base	extensible	Care Team Member Function  .	📦20240605	VSAC v0.24
+Constraints
+Id	Grade	Path(s)	Description	Expression
+ctm-1	error	CareTeam.participant	CareTeam.participant.onBehalfOf can only be populated when CareTeam.participant.member is a Practitioner	onBehalfOf.exists() implies (member.resolve().iif(empty(), true, ofType(Practitioner).exists()))
+dom-2	error	CareTeam	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	CareTeam	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	CareTeam	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	CareTeam	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	CareTeam	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+Differential View
+
+This structure is derived from CareTeam
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CareTeam		0..*	CareTeam	Planned participants in the coordination and delivery of care for a patient or group
+... status	S	0..1	code	proposed | active | suspended | inactive | entered-in-error
+Binding: CareTeamStatus (required): Indicates whether the team is current , represents future intentions or is now a historical record.
+... subject	S	1..1	Reference(US Core Patient Profile S | Group)	Who care team is for
+... participant	S	1..*	BackboneElement	Members of the team
+.... role	S	1..1	CodeableConcept	Type of involvement
+Binding: Care Team Member Function . (extensible): Indicates specific responsibility of an individual within the care team, such as Primary physician, Team coordinator, Caregiver, etc.
+.... member	S	1..1	Reference(US Core Practitioner Profile S | US Core Organization Profile | US Core Patient Profile | US Core PractitionerRole Profile S | US Core CareTeam Profile | US Core RelatedPerson Profile S)	Who is involved
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+CareTeam.status	Base	required	CareTeamStatus 	📦4.0.1	FHIR Std.
+CareTeam.participant.​role	Base	extensible	Care Team Member Function  .	📦20240605	VSAC v0.24
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. CareTeam		0..*	CareTeam	Planned participants in the coordination and delivery of care for a patient or group
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	Σ	0..1	Meta	Metadata about the resource
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text		0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+... contained		0..*	Resource	Contained, inline Resources
+... extension		0..*	Extension	Additional content defined by implementations
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... identifier	Σ	0..*	Identifier	External Ids for this team
+... status	?!SΣ	0..1	code	proposed | active | suspended | inactive | entered-in-error
+Binding: CareTeamStatus (required): Indicates whether the team is current , represents future intentions or is now a historical record.
+... category	Σ	0..*	CodeableConcept	Type of team
+Binding: CareTeamCategory (example): Indicates the type of care team.
+... name	Σ	0..1	string	Name of the team, such as crisis assessment team
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who care team is for
+... encounter	Σ	0..1	Reference(Encounter)	Encounter created as part of
+... period	Σ	0..1	Period	Time period team covers
+... participant	SC	1..*	BackboneElement	Members of the team
+Constraints: ctm-1
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... role	SΣ	1..1	CodeableConcept	Type of involvement
+Binding: Care Team Member Function . (extensible): Indicates specific responsibility of an individual within the care team, such as Primary physician, Team coordinator, Caregiver, etc.
+.... member	SΣ	1..1	Reference(US Core Practitioner Profile S | US Core Organization Profile | US Core Patient Profile | US Core PractitionerRole Profile S | US Core CareTeam Profile | US Core RelatedPerson Profile S)	Who is involved
+.... onBehalfOf	Σ	0..1	Reference(Organization)	Organization of the practitioner
+.... period		0..1	Period	Time period of participant
+... reasonCode		0..*	CodeableConcept	Why the care team exists
+Binding: SNOMEDCTClinicalFindings (example): Indicates the reason for the care team.
+... reasonReference		0..*	Reference(Condition)	Why the care team exists
+... managingOrganization	Σ	0..*	Reference(Organization)	Organization responsible for the care team
+... telecom		0..*	ContactPoint	A contact detail for the care team (that applies to all members)
+... note		0..*	Annotation	Comments made about the CareTeam
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+CareTeam.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+CareTeam.status	Base	required	CareTeamStatus 	📦4.0.1	FHIR Std.
+CareTeam.category	Base	example	Care Team category 	📍4.0.1	FHIR Std.
+CareTeam.participant.​role	Base	extensible	Care Team Member Function  .	📦20240605	VSAC v0.24
+CareTeam.reasonCode	Base	example	SNOMED CT Clinical Findings 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+ctm-1	error	CareTeam.participant	CareTeam.participant.onBehalfOf can only be populated when CareTeam.participant.member is a Practitioner	onBehalfOf.exists() implies (member.resolve().iif(empty(), true, ofType(Practitioner).exists()))
+dom-2	error	CareTeam	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	CareTeam	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	CareTeam	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	CareTeam	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	CareTeam	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+This structure is derived from CareTeam
+
+Summary
+
+Mandatory: 4 elements
+Must-Support: 5 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Practitioner Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner)
+US Core Organization Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization)
+US Core PractitionerRole Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole)
+US Core CareTeam Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-careteam)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to careteam data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/CareTeam.rs
+Mandatory Search Parameters:
+The following search parameters and search parameter combinations SHALL be supported:
+
+SHALL support searching using the combination of the patient and status search parameters:
+including optional support for these _include parameters: CareTeam:participant:PractitionerRole,CareTeam:participant:Practitioner,CareTeam:participant:Patient,CareTeam:participant:RelatedPerson
+including optional support for OR search on status (e.g.status={system|}[code],{system|}[code],...)
+GET [base]/CareTeam?patient={Type/}[id]&status=active
+
+Example:
+
+GET [base]/CareTeam?patient=1137192&status=active
+GET [base]/CareTeam?patient=1137192&status=active&_include=CareTeam:participant:RelatedPerson&_include=CareTeam:participant:Patient&_include=CareTeam:participant:Practitioner&_include=CareTeam:participant:PractitionerRole
+Implementation Notes: Fetches a bundle of all CareTeam resources for the specified patient and status =active and may include CareTeam Patient, RelatedPerson and Practitioner and PractitionerRole participants.
+To get Practitioner name and identifier using PractitionerRole:
+1) Search for the careteam PractitionerRole: GET [base]/CareTeam?patient=[id]&status=active&_include=CareTeam:participant:PractitionerRole 2) Use the FHIR _id from the PractitionerRole.practitioner element, to fetch the Practitioner resources using GET [base]/Practitioner?_id=[id] (how to search by reference and how to search by token)
+
+Optional Search Parameters:
+The following search parameter combinations SHOULD be supported:
+
+SHOULD support searching using the combination of the patient and role search parameters:
+including optional support for these _include parameters: CareTeam:participant:PractitionerRole,CareTeam:participant:Practitioner,CareTeam:participant:Patient,CareTeam:participant:RelatedPerson
+including optional support for OR search on role (e.g.role={system|}[code],{system|}[code],...)
+GET [base]/CareTeam?patient={Type/}[id]&role={system|}[code]{,{system|}[code],...}
+
+Resource Profile: US Core Condition Encounter Diagnosis Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-encounter-diagnosis	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreConditionEncounterDiagnosisProfile
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.17
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core Condition Encounter Diagnosis Profile inherits from the FHIR Condition resource; refer to it for scope and usage definitions. US Core version 5.0.0 split the US Core Condition Profile into this profile and the US Core Condition Problems and Health Concerns Profile. This profile meets the requirements of the U.S. Core Data for Interoperability (USCDI) Encounter Diagnosis Data Element. It sets minimum expectations for the Condition resource to record, search, and fetch information about an encounter diagnosis. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present in the resource and constrains how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for this profile:
+
+Query for a Patient's current or historical encounter diagnosis
+Record or update a Patient's encounter diagnosis
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each Condition Must Have:
+
+a category code of 'encounter-diagnosis'
+a code that identifies the condition*
+a patient
+Each Condition Must Support:
+
+an encounter
+date record was first recorded
+Additional USCDI Requirements:
+
+These Additional USCDI Requirements elements are not Mandatory or Must Support but are required for ASTP Health IT certification testing and are included in the formal definition of the profile and the Condition examples.
+
+a recorder*
+Profile Specific Implementation Guidance:
+
+For Problems and Health Concerns, use the US Core Condition Problems and Health Concerns Profile.
+*The Condition.code has an additional binding of "current" and a base "preferred" binding.
+For the conformance rules on the current binding for coded data, review this section in the General Requirements page.
+USCDI's applicable vocabulary standards for Encounter Diagnosis are SNOMED CT and ICD-10-CM.
+The US Core Condition Codes only supports ICD-9-CM for historical purposes. When using ICD codes, only non-header ICD-10-CM codes SHOULD be used as the primary code for current encounter diagnoses.
+The encounter SHOULD always be referenced in Condition.encounter.
+To search for an encounter diagnosis, query for Conditions that reference the Encounter of interest and have a category of encounter-diagnosis. An example search is shown in the Quick Start section below.
+*The profile elements Condition.asserter and Condition.recorder communicate the individual level provenance author data corresponding to the U.S. Core Data for Interoperability (USCDI) Provenance Author Data Elements.
+Usages:
+
+Refer to this Profile: US Core Encounter Profile
+Examples for this Profile: Condition/encounter-diagnosis-example1 and Condition/encounter-diagnosis-example2
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+The data elements list has changed
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition	C	0..*	Condition	Detailed information about conditions, problems or diagnoses
+Constraints: con-3, con-4, con-5
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... clinicalStatus	?!ΣC	0..1	CodeableConcept	active | recurrence | relapse | inactive | remission | resolved
+Binding: ConditionClinicalStatusCodes (required): The clinical status of the condition or diagnosis.
+... verificationStatus	?!ΣC	0..1	CodeableConcept	unconfirmed | provisional | differential | confirmed | refuted | entered-in-error
+Binding: ConditionVerificationStatus (required): The verification status to support or decline the clinical status of the condition or diagnosis.
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+.... category:us-core	S	1..1	CodeableConcept	encounter-diagnosis
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+
+Required Pattern: At least the following
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/condition-category
+...... version		0..1	string	Version of the system - if relevant
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: encounter-diagnosis
+...... display		0..1	string	Representation defined by the system
+...... userSelected		0..1	boolean	If this coding was chosen directly by the user
+..... text		0..1	string	Plain text representation of the concept
+... code	SΣ	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... encounter	SΣ	0..1	Reference(US Core Encounter Profile)	Encounter created as part of
+... recordedDate	SΣ	0..1	dateTime	Date record was first recorded
+... recorder	Σ	0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Condition.clinicalStatus	Base	required	Condition Clinical Status Codes 	📍4.0.1	FHIR Std.
+Condition.verificationStatus	Base	required	ConditionVerificationStatus 	📍4.0.1	FHIR Std.
+Condition.category	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.category:us-core	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Constraints
+Id	Grade	Path(s)	Description	Expression
+con-3	best practice	Condition	Condition.clinicalStatus SHALL be present if verificationStatus is not entered-in-error and category is problem-list-item	clinicalStatus.exists() or verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code = 'entered-in-error').exists() or category.select($this='problem-list-item').empty()
+con-4	error	Condition	If condition is abated, then clinicalStatus must be either inactive, resolved, or remission	abatement.empty() or clinicalStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-clinical' and (code='resolved' or code='remission' or code='inactive')).exists()
+con-5	error	Condition	Condition.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code='entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	Condition	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Condition	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Condition	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Condition	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Condition	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+Differential View
+
+This structure is derived from Condition
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition		0..*	Condition	Detailed information about conditions, problems or diagnoses
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+.... category:us-core	S	1..1	CodeableConcept	encounter-diagnosis
+Required Pattern: At least the following
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/condition-category
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: encounter-diagnosis
+... code	S	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... subject	S	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... encounter	S	0..1	Reference(US Core Encounter Profile)	Encounter created as part of
+... recordedDate	S	0..1	dateTime	Date record was first recorded
+... recorder		0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition	C	0..*	Condition	Detailed information about conditions, problems or diagnoses
+Constraints: con-3, con-4, con-5
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	Σ	0..1	Meta	Metadata about the resource
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text		0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+... contained		0..*	Resource	Contained, inline Resources
+... extension		0..*	Extension	Additional content defined by implementations
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... identifier	Σ	0..*	Identifier	External Ids for this condition
+... clinicalStatus	?!ΣC	0..1	CodeableConcept	active | recurrence | relapse | inactive | remission | resolved
+Binding: ConditionClinicalStatusCodes (required): The clinical status of the condition or diagnosis.
+... verificationStatus	?!ΣC	0..1	CodeableConcept	unconfirmed | provisional | differential | confirmed | refuted | entered-in-error
+Binding: ConditionVerificationStatus (required): The verification status to support or decline the clinical status of the condition or diagnosis.
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+.... category:us-core	S	1..1	CodeableConcept	encounter-diagnosis
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+
+Required Pattern: At least the following
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/condition-category
+...... version		0..1	string	Version of the system - if relevant
+...... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: encounter-diagnosis
+...... display		0..1	string	Representation defined by the system
+...... userSelected		0..1	boolean	If this coding was chosen directly by the user
+..... text		0..1	string	Plain text representation of the concept
+... severity		0..1	CodeableConcept	Subjective severity of condition
+Binding: Condition/DiagnosisSeverity (preferred): A subjective assessment of the severity of the condition as evaluated by the clinician.
+... code	SΣ	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... bodySite	Σ	0..*	CodeableConcept	Anatomical location, if relevant
+Binding: SNOMEDCTBodyStructures (example): Codes describing anatomical locations. May include laterality.
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... encounter	SΣ	0..1	Reference(US Core Encounter Profile)	Encounter created as part of
+... onset[x]	Σ	0..1		Estimated or actual date, date-time, or age
+.... onsetDateTime			dateTime	
+.... onsetAge			Age	
+.... onsetPeriod			Period	
+.... onsetRange			Range	
+.... onsetString			string	
+... abatement[x]	C	0..1		When in resolution/remission
+.... abatementDateTime			dateTime	
+.... abatementAge			Age	
+.... abatementPeriod			Period	
+.... abatementRange			Range	
+.... abatementString			string	
+... recordedDate	SΣ	0..1	dateTime	Date record was first recorded
+... recorder	Σ	0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+... asserter	Σ	0..1	Reference(Practitioner | PractitionerRole | Patient | RelatedPerson)	Person who asserts this condition
+... stage	C	0..*	BackboneElement	Stage/grade, usually assessed formally
+Constraints: con-1
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... summary	C	0..1	CodeableConcept	Simple summary (disease specific)
+Binding: ConditionStage (example): Codes describing condition stages (e.g. Cancer stages).
+.... assessment	C	0..*	Reference(ClinicalImpression | DiagnosticReport | Observation)	Formal record of assessment
+.... type		0..1	CodeableConcept	Kind of staging
+Binding: ConditionStageType (example): Codes describing the kind of condition staging (e.g. clinical or pathological).
+... evidence	C	0..*	BackboneElement	Supporting evidence
+Constraints: con-2
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... code	ΣC	0..*	CodeableConcept	Manifestation/symptom
+Binding: ManifestationAndSymptomCodes (example): Codes that describe the manifestation or symptoms of a condition.
+.... detail	ΣC	0..*	Reference(Resource)	Supporting information found elsewhere
+... note		0..*	Annotation	Additional information about the Condition
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Condition.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+Condition.clinicalStatus	Base	required	Condition Clinical Status Codes 	📍4.0.1	FHIR Std.
+Condition.verificationStatus	Base	required	ConditionVerificationStatus 	📍4.0.1	FHIR Std.
+Condition.category	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.category:us-core	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.severity	Base	preferred	Condition/Diagnosis Severity 	📍4.0.1	FHIR Std.
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Condition.bodySite	Base	example	SNOMED CT Body Structures 	📍4.0.1	FHIR Std.
+Condition.stage.summary	Base	example	Condition Stage 	📍4.0.1	FHIR Std.
+Condition.stage.type	Base	example	Condition Stage Type 	📍4.0.1	FHIR Std.
+Condition.evidence.code	Base	example	Manifestation and Symptom Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+con-1	error	Condition.stage	Stage SHALL have summary or assessment	summary.exists() or assessment.exists()
+con-2	error	Condition.evidence	evidence SHALL have code or details	code.exists() or detail.exists()
+con-3	best practice	Condition	Condition.clinicalStatus SHALL be present if verificationStatus is not entered-in-error and category is problem-list-item	clinicalStatus.exists() or verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code = 'entered-in-error').exists() or category.select($this='problem-list-item').empty()
+con-4	error	Condition	If condition is abated, then clinicalStatus must be either inactive, resolved, or remission	abatement.empty() or clinicalStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-clinical' and (code='resolved' or code='remission' or code='inactive')).exists()
+con-5	error	Condition	Condition.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code='entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	Condition	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Condition	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Condition	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Condition	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Condition	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+This structure is derived from Condition
+
+Summary
+
+Mandatory: 3 elements
+Must-Support: 6 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Encounter Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter)
+US Core Practitioner Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Slices
+
+This structure defines the following Slices:
+
+The element 1 is sliced based on the value of Condition.category
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to encounter diagnosis data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/Condition.rs
+
+granular scopes: <patient|user|system>/Condition.rs?category=http://terminology.hl7.org/CodeSystem/condition-category|encounter-diagnosis
+
+Mandatory Search Parameters:
+The following search parameters and search parameter combinations SHALL be supported:
+
+SHALL support searching for all conditions including problems, health concerns, and encounter diagnosis for a patient using the patient search parameter:
+
+GET [base]/Condition?patient={Type/}[id]
+
+Example:
+
+GET [base]/Condition?patient=1137192
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient (how to search by reference)
+
+SHALL support searching using the combination of the patient and category search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=encounter-diagnosis
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and category = "encounter-diagnosis". (how to search by reference and how to search by token)
+
+Optional Search Parameters:
+The following search parameter combinations SHOULD be supported:
+
+SHOULD support searching using the combination of the patient and clinical-status search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+
+Example:
+
+GET [base]/Condition?patient=1032702&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and all "active" statuses (active,relapse,remission). This will exclude Conditions with no clinicalStatus specified. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and category and clinical-status search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=encounter-diagnosis&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and category = "encounter-diagnosis" for all "active" statuses (active,relapse,remission). This will exclude Conditions with no clinicalStatus specified. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and category and encounter search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]&encounter={Type/}[id]
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=encounter-diagnosis&encounter=Encounter/1036
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient, encounter, and category = "encounter-diagnosis". When category = "encounter-diagnosis" will return the encounter diagnosis for the encounter. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and code search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&code={system|}[code]
+
+Example:
+
+GET [base]/Condition?patient=1032702&code=http://snomed.info/sct|39065001
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and code. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and onset-date search parameters:
+including support for these onset-date comparators: gt,lt,ge,le
+including optional support for AND search on onset-date (e.g.onset-date=[date]&onset-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&onset-date={gt|lt|ge|le}[date]{&onset-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&onset-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and asserted-date search parameters:
+including support for these asserted-date comparators: gt,lt,ge,le
+including optional support for AND search on asserted-date (e.g.asserted-date=[date]&asserted-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&asserted-date={gt|lt|ge|le}[date]{&asserted-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&asserted-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and recorded-date search parameters:
+including support for these recorded-date comparators: gt,lt,ge,le
+including optional support for AND search on recorded-date (e.g.recorded-date=[date]&recorded-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&recorded-date={gt|lt|ge|le}[date]{&recorded-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&recorded-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and abatement-date search parameters:
+including support for these abatement-date comparators: gt,lt,ge,le
+including optional support for AND search on abatement-date (e.g.abatement-date=[date]&abatement-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&abatement-date={gt|lt|ge|le}[date]{&abatement-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&abatement-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and _lastUpdated search parameters:
+including support for these _lastUpdated comparators: gt,lt,ge,le
+including optional support for AND search on _lastUpdated (e.g._lastUpdated=[date]&_lastUpdated=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&_lastUpdated={gt|lt|ge|le}[date]{&_lastUpdated={gt|lt|ge|le}[date]&...}
+
+Resource Profile: US Core Condition Problems and Health Concerns Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreConditionProblemsHealthConcernsProfile
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.18
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core Condition Problems and Health Concerns Profile inherits from the FHIR Condition resource; refer to it for scope and usage definitions. US Core version 5.0.0 split the US Core Condition Profile into this profile and the US Core Condition Encounter Diagnosis Profile. This profile meets the requirements of the U.S. Core Data for Interoperability (USCDI) Problems, Health Concerns, and SDOH Problems/Health Concerns Data Elements. It sets minimum expectations for the Condition resource to record, search, and fetch information about a condition, diagnosis, or another event, situation, issue, or clinical concept documented and categorized as a problem or health concern, including information about a Social Determinants of Health related condition. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present in the resource and constrains how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for this profile:
+
+Query for a Patient's current or historical problems and health concerns
+Record or update a Patient's problems and health concerns
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each Condition Must Have:
+
+a category code of "problem-list-item" or "health-concern"
+a code that identifies the condition*
+a patient
+Each Condition Must Support:
+
+a timestamp when the resource last changed*
+a clinical status of the condition (e.g., active or resolved)
+a verification status
+a date of diagnosis*
+abatement date (in other words, date of resolution or remission)
+a date when recorded*
+Additional USCDI Requirements:
+
+These Additional USCDI Requirements elements are not Mandatory or Must Support but are required for ASTP Health IT certification testing and are included in the formal definition of the profile and the Condition examples.
+
+additional health status/assessment categories*
+a recorder*
+*see guidance below
+
+Profile Specific Implementation Guidance:
+
+For Encounter Diagnosis, use the US Core Condition Encounter Diagnosis Profile.
+*The Condition.code has an additional binding of "current" and a base "preferred" binding.
+For the conformance rules on the current binding for coded data, review this section in the General Requirements page.
+USCDI's applicable vocabulary standards for Problems/Health Concerns are SNOMED CT and ICD-10-CM.
+The US Core Condition Codes only supports ICD-9-CM for historical purposes. When using ICD codes, only non-header ICD-10-CM codes SHOULD be used.
+See the Screening and Assessments guidance page for more information when exchanging Social Determinants of Health (SDOH) Problems/Health Concerns.
+*The category of "problem-list-item" or "health-concern" is required, and, at a minimum, Certifying Systems SHALL support, a category of "sdoh", SHOULD support the other US Core Simple Observation Category codes, and MAY support other categories.
+If the category is "problem-list-item", Condition.clinicalStatus SHOULD be present.
+*There is no single element in Condition that represents the date of diagnosis. It may be the assertedDate Extension, Condition.onsetDateTime, or Condition.recordedDate.
+Although all three are marked as Must Support, the Server is not required to support all.
+A Server SHALL support Condition.recordedDate.
+A Server SHALL support at least one of assertedDate Extension and Condition.onsetDateTime. A Server may support both, which means they support all 3 locations.
+The Client application SHALL support all three elements
+* See the US Core General Guidance page for Searching Using lastUpdated. Updates to .meta.lastUpdated SHOULD reflect:
+New problems and health concerns
+Changes in the clinical status or verifications status of problems or health concerns
+*The profile elements Condition.asserter and Condition.recorder communicate the individual level provenance author data corresponding to the U.S. Core Data for Interoperability (USCDI) Provenance Author Data Elements.
+Usages:
+
+Refer to this Profile: US Core Encounter Profile
+Examples for this Profile: Condition/condition-SDOH-example, Condition/condition-duodenal-ulcer and Condition/health-concern-example
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+The data elements list has changed
+One or more text definitions, invariants or bindings have changed
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition	C	0..*	Condition	Detailed information about conditions, problems or diagnoses
+Constraints: con-3, con-4, con-5
+... meta	SΣ	0..1	Meta	Metadata about the resource
+.... lastUpdated	SΣ	0..1	instant	When the resource last changed
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... Slices for extension				Content/Rules for all slices
+.... extension:assertedDate	S	0..1	dateTime	Date the condition was first asserted
+URL: http://hl7.org/fhir/StructureDefinition/condition-assertedDate
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... clinicalStatus	?!SΣC	0..1	CodeableConcept	active | recurrence | relapse | inactive | remission | resolved
+Binding: ConditionClinicalStatusCodes (required)
+... verificationStatus	?!SΣC	0..1	CodeableConcept	unconfirmed | provisional | differential | confirmed | refuted | entered-in-error
+Binding: ConditionVerificationStatus (required)
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+.... category:us-core	S	1..*	CodeableConcept	problem-list-item | health-concern
+Binding: US Core Problem or Health Concern (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+.... category:screening-assessment		0..*	CodeableConcept	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: USCDI Health Status/Assessments Data Class
+Binding: US Core Simple Observation Category (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+Additional Bindings	Purpose	Documentation
+US Core Screening Assessment Observation Category	Min Binding	
+USCDI Health Status/Assessments Data Elements
+
+... code	SΣ	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... onset[x]	SΣ	0..1		Estimated or actual date, date-time, or age
+.... onsetDateTime			dateTime S	
+.... onsetAge			Age	
+.... onsetPeriod			Period	
+.... onsetRange			Range	
+.... onsetString			string	
+... abatement[x]	SC	0..1		When in resolution/remission
+.... abatementDateTime			dateTime S	
+.... abatementAge			Age	
+.... abatementPeriod			Period	
+.... abatementRange			Range	
+.... abatementString			string	
+... recordedDate	SΣ	0..1	dateTime	Date record was first recorded
+... recorder	Σ	0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Condition.clinicalStatus	Base	required	Condition Clinical Status Codes 	📦4.0.1	FHIR Std.
+Condition.verificationStatus	Base	required	ConditionVerificationStatus 	📦4.0.1	FHIR Std.
+Condition.category	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.category:us-core	Base	required	US Core Problem or Health Concern 	📦8.0.1	This IG
+Condition.category:screening-assessment	Base	required	US Core Simple Observation Category 	📦8.0.1	This IG
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Constraints
+Id	Grade	Path(s)	Description	Expression
+con-3	best practice	Condition	Condition.clinicalStatus SHALL be present if verificationStatus is not entered-in-error and category is problem-list-item	clinicalStatus.exists() or verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code = 'entered-in-error').exists() or category.select($this='problem-list-item').empty()
+con-4	error	Condition	If condition is abated, then clinicalStatus must be either inactive, resolved, or remission	abatement.empty() or clinicalStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-clinical' and (code='resolved' or code='remission' or code='inactive')).exists()
+con-5	error	Condition	Condition.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code='entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	Condition	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Condition	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Condition	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Condition	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Condition	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+Differential View
+
+This structure is derived from Condition
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition		0..*	Condition	Detailed information about conditions, problems or diagnoses
+... meta	S	0..1	Meta	Metadata about the resource
+.... lastUpdated	S	0..1	instant	When the resource last changed
+... Slices for extension				Content/Rules for all slices
+.... extension:assertedDate	S	0..1	dateTime	Date the condition was first asserted
+URL: http://hl7.org/fhir/StructureDefinition/condition-assertedDate
+... clinicalStatus	S	0..1	CodeableConcept	active | recurrence | relapse | inactive | remission | resolved
+Binding: ConditionClinicalStatusCodes (required)
+... verificationStatus	S	0..1	CodeableConcept	unconfirmed | provisional | differential | confirmed | refuted | entered-in-error
+Binding: ConditionVerificationStatus (required)
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+.... category:us-core	S	1..*	CodeableConcept	problem-list-item | health-concern
+Binding: US Core Problem or Health Concern (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+.... category:screening-assessment		0..*	CodeableConcept	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: USCDI Health Status/Assessments Data Class
+Binding: US Core Simple Observation Category (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+Additional Bindings	Purpose	Documentation
+US Core Screening Assessment Observation Category	Min Binding	
+USCDI Health Status/Assessments Data Elements
+... code	S	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... subject	S	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... onset[x]	S	0..1		Estimated or actual date, date-time, or age
+.... onsetDateTime			dateTime S	
+.... onsetAge			Age	
+.... onsetPeriod			Period	
+.... onsetRange			Range	
+.... onsetString			string	
+... abatement[x]	S	0..1		When in resolution/remission
+.... abatementDateTime			dateTime S	
+.... abatementAge			Age	
+.... abatementPeriod			Period	
+.... abatementRange			Range	
+.... abatementString			string	
+... recordedDate	S	0..1	dateTime	Date record was first recorded
+... recorder		0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+Condition.clinicalStatus	Base	required	Condition Clinical Status Codes 	📦4.0.1	FHIR Std.
+Condition.verificationStatus	Base	required	ConditionVerificationStatus 	📦4.0.1	FHIR Std.
+Condition.category:us-core	Base	required	US Core Problem or Health Concern 	📦8.0.1	This IG
+Condition.category:screening-assessment	Base	required	US Core Simple Observation Category 	📦8.0.1	This IG
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Condition	C	0..*	Condition	Detailed information about conditions, problems or diagnoses
+Constraints: con-3, con-4, con-5
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	SΣ	0..1	Meta	Metadata about the resource
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+Slice: Unordered, Open by value:url
+.... versionId	Σ	0..1	id	Version specific identifier
+.... lastUpdated	SΣ	0..1	instant	When the resource last changed
+.... source	Σ	0..1	uri	Identifies where the resource comes from
+.... profile	Σ	0..*	canonical(StructureDefinition)	Profiles this resource claims to conform to
+.... security	Σ	0..*	Coding	Security Labels applied to this resource
+Binding: All Security Labels (extensible): Security Labels from the Healthcare Privacy and Security Classification System.
+.... tag	Σ	0..*	Coding	Tags applied to this resource
+Binding: CommonTags (example): Codes that represent various types of tags, commonly workflow-related; e.g. "Needs review by Dr. Jones".
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text		0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+... contained		0..*	Resource	Contained, inline Resources
+... Slices for extension		0..*	Extension	Extension
+Slice: Unordered, Open by value:url
+.... extension:assertedDate	S	0..1	dateTime	Date the condition was first asserted
+URL: http://hl7.org/fhir/StructureDefinition/condition-assertedDate
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... identifier	Σ	0..*	Identifier	External Ids for this condition
+... clinicalStatus	?!SΣC	0..1	CodeableConcept	active | recurrence | relapse | inactive | remission | resolved
+Binding: ConditionClinicalStatusCodes (required)
+... verificationStatus	?!SΣC	0..1	CodeableConcept	unconfirmed | provisional | differential | confirmed | refuted | entered-in-error
+Binding: ConditionVerificationStatus (required)
+... Slices for category	S	1..*	CodeableConcept	category codes
+Slice: Unordered, Open by value:$this
+Binding: ConditionCategoryCodes (extensible): A category assigned to the condition.
+.... category:us-core	S	1..*	CodeableConcept	problem-list-item | health-concern
+Binding: US Core Problem or Health Concern (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+.... category:screening-assessment		0..*	CodeableConcept	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: USCDI Health Status/Assessments Data Class
+Binding: US Core Simple Observation Category (required): Note that other codes are permitted, see Required Bindings When Slicing by Value Sets
+Additional Bindings	Purpose	Documentation
+US Core Screening Assessment Observation Category	Min Binding	
+USCDI Health Status/Assessments Data Elements
+
+... severity		0..1	CodeableConcept	Subjective severity of condition
+Binding: Condition/DiagnosisSeverity (preferred): A subjective assessment of the severity of the condition as evaluated by the clinician.
+... code	SΣ	1..1	CodeableConcept	Identification of the condition, problem or diagnosis
+Binding: US Core Condition Codes (preferred): Valueset to describe the actual problem experienced by the patient
+Additional Bindings	Purpose	Documentation
+US Core Condition Codes Current	Current	
+Required for new records
+... bodySite	Σ	0..*	CodeableConcept	Anatomical location, if relevant
+Binding: SNOMEDCTBodyStructures (example): Codes describing anatomical locations. May include laterality.
+... subject	SΣ	1..1	Reference(US Core Patient Profile S | Group)	Who has the condition?
+... encounter	Σ	0..1	Reference(Encounter)	Encounter created as part of
+... onset[x]	SΣ	0..1		Estimated or actual date, date-time, or age
+.... onsetDateTime			dateTime S	
+.... onsetAge			Age	
+.... onsetPeriod			Period	
+.... onsetRange			Range	
+.... onsetString			string	
+... abatement[x]	SC	0..1		When in resolution/remission
+.... abatementDateTime			dateTime S	
+.... abatementAge			Age	
+.... abatementPeriod			Period	
+.... abatementRange			Range	
+.... abatementString			string	
+... recordedDate	SΣ	0..1	dateTime	Date record was first recorded
+... recorder	Σ	0..1	Reference(US Core Practitioner Profile | US Core Patient Profile | PractitionerRole | US Core RelatedPerson Profile)	𝗔𝗗𝗗𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗨𝗦𝗖𝗗𝗜: Who recorded the condition
+... asserter	Σ	0..1	Reference(Practitioner | PractitionerRole | Patient | RelatedPerson)	Person who asserts this condition
+... stage	C	0..*	BackboneElement	Stage/grade, usually assessed formally
+Constraints: con-1
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... summary	C	0..1	CodeableConcept	Simple summary (disease specific)
+Binding: ConditionStage (example): Codes describing condition stages (e.g. Cancer stages).
+.... assessment	C	0..*	Reference(ClinicalImpression | DiagnosticReport | Observation)	Formal record of assessment
+.... type		0..1	CodeableConcept	Kind of staging
+Binding: ConditionStageType (example): Codes describing the kind of condition staging (e.g. clinical or pathological).
+... evidence	C	0..*	BackboneElement	Supporting evidence
+Constraints: con-2
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... code	ΣC	0..*	CodeableConcept	Manifestation/symptom
+Binding: ManifestationAndSymptomCodes (example): Codes that describe the manifestation or symptoms of a condition.
+.... detail	ΣC	0..*	Reference(Resource)	Supporting information found elsewhere
+... note		0..*	Annotation	Additional information about the Condition
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Condition.meta.security	Base	extensible	SecurityLabels 	📍4.0.1	FHIR Std.
+Condition.meta.tag	Base	example	Common Tags 	📍4.0.1	FHIR Std.
+Condition.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+Condition.clinicalStatus	Base	required	Condition Clinical Status Codes 	📦4.0.1	FHIR Std.
+Condition.verificationStatus	Base	required	ConditionVerificationStatus 	📦4.0.1	FHIR Std.
+Condition.category	Base	extensible	Condition Category Codes 	📍4.0.1	FHIR Std.
+Condition.category:us-core	Base	required	US Core Problem or Health Concern 	📦8.0.1	This IG
+Condition.category:screening-assessment	Base	required	US Core Simple Observation Category 	📦8.0.1	This IG
+Condition.severity	Base	preferred	Condition/Diagnosis Severity 	📍4.0.1	FHIR Std.
+Condition.code	Base	preferred	US Core Condition Codes 	📦8.0.1	This IG
+Condition.bodySite	Base	example	SNOMED CT Body Structures 	📍4.0.1	FHIR Std.
+Condition.stage.summary	Base	example	Condition Stage 	📍4.0.1	FHIR Std.
+Condition.stage.type	Base	example	Condition Stage Type 	📍4.0.1	FHIR Std.
+Condition.evidence.code	Base	example	Manifestation and Symptom Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+con-1	error	Condition.stage	Stage SHALL have summary or assessment	summary.exists() or assessment.exists()
+con-2	error	Condition.evidence	evidence SHALL have code or details	code.exists() or detail.exists()
+con-3	best practice	Condition	Condition.clinicalStatus SHALL be present if verificationStatus is not entered-in-error and category is problem-list-item	clinicalStatus.exists() or verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code = 'entered-in-error').exists() or category.select($this='problem-list-item').empty()
+con-4	error	Condition	If condition is abated, then clinicalStatus must be either inactive, resolved, or remission	abatement.empty() or clinicalStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-clinical' and (code='resolved' or code='remission' or code='inactive')).exists()
+con-5	error	Condition	Condition.clinicalStatus SHALL NOT be present if verification Status is entered-in-error	verificationStatus.coding.where(system='http://terminology.hl7.org/CodeSystem/condition-ver-status' and code='entered-in-error').empty() or clinicalStatus.empty()
+dom-2	error	Condition	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Condition	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Condition	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Condition	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Condition	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+This structure is derived from Condition
+
+Summary
+
+Mandatory: 3 elements
+Must-Support: 12 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Practitioner Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Extensions
+
+This structure refers to these extensions:
+
+http://hl7.org/fhir/StructureDefinition/condition-assertedDate
+Slices
+
+This structure defines the following Slices:
+
+The element 1 is sliced based on the value of Condition.category
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to problems and health concern data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/Condition.rs
+
+granular scopes: <patient|user|system>/Condition.rs?category=http://terminology.hl7.org/CodeSystem/condition-category|problem-list-item
+
+granular scopes: <patient|user|system>/Condition.rs?category=http://hl7.org/fhir/us/core/CodeSystem/condition-category|health-concern
+
+Mandatory Search Parameters:
+The following search parameters and search parameter combinations SHALL be supported:
+
+SHALL support searching for all conditions including problems, health concerns, and encounter diagnosis for a patient using the patient search parameter:
+
+GET [base]/Condition?patient={Type/}[id]
+
+Example:
+
+GET [base]/Condition?patient=1137192
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient (how to search by reference)
+
+SHALL support searching using the combination of the patient and category search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=problem-list-item
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and category = "problem-list-item". (how to search by reference and how to search by token)
+
+Optional Search Parameters:
+The following search parameter combinations SHOULD be supported:
+
+SHOULD support searching using the combination of the patient and clinical-status search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+
+Example:
+
+GET [base]/Condition?patient=1032702&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and all "active" statuses (active,relapse,remission). This will exclude Conditions with no clinicalStatus specified. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and category and clinical-status search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=problem-list-item&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active,http://terminology.hl7.org/CodeSystem/condition-clinical|recurrance,http://terminology.hl7.org/CodeSystem/condition-clinical|remission
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and category = "problem-list-item" for all "active" statuses (active,relapse,remission). This will exclude Conditions with no clinicalStatus specified. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and category and encounter search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&category={system|}[code]&encounter={Type/}[id]
+
+Example:
+
+GET [base]/Condition?patient=1032702&category=problem-list-item&encounter=Encounter/1036
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient, encounter, and category = "problem-list-item". (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and code search parameters:
+
+GET [base]/Condition?patient={Type/}[id]&code={system|}[code]
+
+Example:
+
+GET [base]/Condition?patient=1032702&code=http://snomed.info/sct|51868009
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and code. (how to search by reference and how to search by token)
+
+SHOULD support searching using the combination of the patient and onset-date search parameters:
+including support for these onset-date comparators: gt,lt,ge,le
+including optional support for AND search on onset-date (e.g.onset-date=[date]&onset-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&onset-date={gt|lt|ge|le}[date]{&onset-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&onset-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and asserted-date search parameters:
+including support for these asserted-date comparators: gt,lt,ge,le
+including optional support for AND search on asserted-date (e.g.asserted-date=[date]&asserted-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&asserted-date={gt|lt|ge|le}[date]{&asserted-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&asserted-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and recorded-date search parameters:
+including support for these recorded-date comparators: gt,lt,ge,le
+including optional support for AND search on recorded-date (e.g.recorded-date=[date]&recorded-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&recorded-date={gt|lt|ge|le}[date]{&recorded-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&recorded-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and abatement-date search parameters:
+including support for these abatement-date comparators: gt,lt,ge,le
+including optional support for AND search on abatement-date (e.g.abatement-date=[date]&abatement-date=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&abatement-date={gt|lt|ge|le}[date]{&abatement-date={gt|lt|ge|le}[date]&...}
+
+Example:
+
+GET [base]Condition?patient=555580&abatement-date=ge2018-01-14
+Implementation Notes: Fetches a bundle of all Condition resources for the specified patient and date. (how to search by reference and how to search by date)
+
+SHOULD support searching using the combination of the patient and _lastUpdated search parameters:
+including support for these _lastUpdated comparators: gt,lt,ge,le
+including optional support for AND search on _lastUpdated (e.g._lastUpdated=[date]&_lastUpdated=[date]]&...)
+GET [base]/Condition?patient={Type/}[id]&_lastUpdated={gt|lt|ge|le}[date]{&_lastUpdated={gt|lt|ge|le}[date]&...}
+Resource Profile: US Core Coverage Profile 
+Official URL: http://hl7.org/fhir/us/core/StructureDefinition/us-core-coverage	Version: 8.0.1
+Standards status: Trial-use	Maturity Level: 3	Computable Name: USCoreCoverageProfile
+Other Identifiers: OID:2.16.840.1.113883.4.642.40.2.42.19
+Copyright/Legal: Used by permission of HL7 International, all rights reserved Creative Commons License
+
+
+The US Core Coverage Profile inherits from the FHIR Coverage resource; refer to it for scope and usage definitions. This profile meets the requirements of the US Core Data for Interoperability (USCDI) Health Insurance Information Data Class. It sets minimum expectations for the Coverage resource to record, search, and fetch data related to an individual's insurance coverage for health care. It specifies which core elements, extensions, vocabularies, and value sets SHALL be present in the resource and constrains how the elements are used. Providing the floor for standards development for specific use cases promotes interoperability and adoption.
+
+Example Usage Scenarios:
+
+The following are example usage scenarios for this profile:
+
+Query for a patient's insurance coverage
+Record or update a past or present insurance coverage
+Mandatory and Must Support Data Elements
+The following data elements must always be present (Mandatory definition) or must be supported if the data is present in the sending system (Must Support definition). They are presented below in a simple human-readable explanation. Profile-specific guidance and examples are provided as well. The Formal Views below provides the formal summary, definitions, and terminology requirements.
+
+Each Coverage Must Have:
+
+health insurance member identifier or subscriber id
+a status
+the health insurance beneficiary (patient)
+beneficiary's relationship to the subscriber
+the health insurance issuer (payer)
+Each Coverage Must Support:
+
+health insurance coverage type (e.g., Medicare)
+coverage start or end date
+health insurance group
+health insurance plan
+Profile Specific Implementation Guidance:
+
+There is no single way to indicate that the patient has no coverage using the Coverage resource:
+Coverage.status alone may not indicate whether an individual is covered. The Coverage.period needs to be considered as well. For example, the coverage may be expired with a status of "active", or conversely, it may be "canceled" but still have covered claims.
+The absence of a Coverage resource instance may mean the patient has no coverage or the healthcare provider may not know it.
+A coverage.type of "81" (Self-pay) MAY be used to imply that the patient has no coverage or that an individual or organization other than an insurer is taking responsibility for payment for a portion of the health care costs.
+The hierarchical nature of the Coverage.type code system "Payer" (also known as the US Public Health Data Consortium Source of Payment Codes) may be unclear in the expansion, and some codes may be inappropriate for the use case. Implementers should refer to the PHDSC Payer Type Committee User's Guide for the Source of Payment Typology when selecting codes.
+
+To differentiate Medicare Parts A, B, C, and D systems can use the following codes:
+
+Medicare Plan	SOP Code (Description)	Comment
+Part A and B	121 (Medicare Fee For Service)	Part A and B. Part A alone cannot be represented (see "Note to Balloters" below). Part B alone does not need to be represented because Part B enrollment requires enrollment in Part A
+Part C (Medicare Advantage Plan)	111 (Medicare HMO)
+112 (Medicare PPO)
+113 (Medicare POS)	These are the most common types of Medicare Advantage Plans
+Part D	122 (Medicare Drug Benefit)	 
+The US Core team requested a stand-alone code for Medicare Part A from NAHDO. If this request is not approved, systems SHOULD use the X12 concept for Medicare Part A as a code translation to the SOP code "121" (see Using multiple codes with CodeableConcept Datatype).
+
+If Insurers issue unique member IDs for dependents, then the memberId Coverage.identifier should be used instead of Coverage.dependent to uniquely refer to the dependent with respect to their insurance.
+Usages:
+
+Examples for this Profile: Coverage/coverage-example
+CapabilityStatements using this Profile: US Core Client CapabilityStatement and US Core Server CapabilityStatement
+You can also check for usages in the FHIR IG Statistics
+
+Changes since version 7.0.0:
+
+The data elements list has changed
+One or more text definitions, invariants or bindings have changed
+Formal Views of Profile Content
+Description of Profiles, Differentials, Snapshots and how the different presentations work.
+
+Key Elements TableDifferential TableSnapshot TableStatistics/ReferencesAll
+Key Elements View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Coverage	C	0..*	Coverage	Insurance or medical plan or a payment agreement
+Constraints: us-core-15
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... Slices for identifier	SΣ	0..*	Identifier	Member ID and other identifiers
+Slice: Unordered, Open by value:type
+.... identifier:memberid	SΣC	0..1	Identifier	Member ID
+..... use	?!Σ	0..1	code	usual | official | temp | secondary | old (If known)
+Binding: IdentifierUse (required): Identifies the purpose for this identifier, if known .
+..... type	SΣ	1..1	CodeableConcept	Member Number identifier type
+Binding: Identifier Type Codes (extensible): A coded type for an identifier that can be used to determine which identifier to use for a specific purpose.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/v2-0203
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: MB
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+... status	?!SΣ	1..1	code	active | cancelled | draft | entered-in-error
+Binding: FinancialResourceStatusCodes (required): A code specifying the state of the resource instance.
+... type	SΣ	0..1	CodeableConcept	Coverage category such as medical or accident
+Binding: Payer Type . (extensible): US Public Health Data Consortium Source of Payment Codes
+... subscriberId	SΣC	0..1	string	ID assigned to the subscriber
+... beneficiary	SΣ	1..1	Reference(US Core Patient Profile)	Plan beneficiary
+... relationship	S	1..1	CodeableConcept	Beneficiary relationship to the subscriber
+Binding: SubscriberRelationshipCodes (extensible)
+... period	SΣ	0..1	Period	Coverage start and end dates
+... payor	SΣ	1..1	Reference(US Core Organization Profile S | US Core Patient Profile | US Core RelatedPerson Profile)	Issuer of the policy
+... Slices for class	S	0..*	BackboneElement	Additional coverage classifications
+Slice: Unordered, Open by value:type
+.... class:All Slices				Content/Rules for all slices
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+..... value	Σ	1..1	string	Value associated with the type
+.... class:group	S	0..1	BackboneElement	Group
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: group
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+..... value	SΣ	1..1	string	Group Identifier
+.... class:plan	S	0..1	BackboneElement	Plan
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: plan
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+..... value	SΣ	1..1	string	Plan Number
+..... name	SΣ	0..1	string	Plan Name
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Coverage.identifier:memberid.​use	Base	required	IdentifierUse 	📍4.0.1	FHIR Std.
+Coverage.identifier:memberid.​type	Base	extensible	IdentifierType 	📍4.0.1	FHIR Std.
+Coverage.status	Base	required	Financial Resource Status Codes 	📍4.0.1	FHIR Std.
+Coverage.type	Base	extensible	Payer Type  .	📦20250419	VSAC v0.24
+Coverage.relationship	Base	extensible	SubscriberPolicyholder Relationship Codes 	📦4.0.1	FHIR Std.
+Coverage.class.type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Coverage.class:group.​type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Coverage.class:plan.​type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+dom-2	error	Coverage	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Coverage	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Coverage	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Coverage	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Coverage	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+us-core-15	error	Coverage	Member Id in Coverage.identifier or Coverage.subscriberId SHALL be present	identifier.type.coding.where(system='http://terminology.hl7.org/CodeSystem/v2-0203' and code='MB').exists() or subscriberId.exists()
+Differential View
+
+This structure is derived from Coverage
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Coverage	C	0..*	Coverage	Insurance or medical plan or a payment agreement
+Constraints: us-core-15
+... Slices for identifier	S	0..*	Identifier	Member ID and other identifiers
+Slice: Unordered, Open by value:type
+.... identifier:memberid	SC	0..1	Identifier	Member ID
+..... type	S	1..1	CodeableConcept	Member Number identifier type
+Required Pattern: At least the following
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/v2-0203
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: MB
+... status	S	1..1	code	active | cancelled | draft | entered-in-error
+... type	S	0..1	CodeableConcept	Coverage category such as medical or accident
+Binding: Payer Type . (extensible): US Public Health Data Consortium Source of Payment Codes
+... subscriberId	SC	0..1	string	ID assigned to the subscriber
+... beneficiary	S	1..1	Reference(US Core Patient Profile)	Plan beneficiary
+... relationship	S	1..1	CodeableConcept	Beneficiary relationship to the subscriber
+Binding: SubscriberRelationshipCodes (extensible)
+... period	S	0..1	Period	Coverage start and end dates
+... payor	S	1..1	Reference(US Core Organization Profile S | US Core Patient Profile | US Core RelatedPerson Profile)	Issuer of the policy
+... Slices for class	S	0..*	BackboneElement	Additional coverage classifications
+Slice: Unordered, Open by value:type
+.... class:group	S	0..1	BackboneElement	Group
+..... type		1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Required Pattern: At least the following
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: group
+..... value	S	1..1	string	Group Identifier
+.... class:plan	S	0..1	BackboneElement	Plan
+..... type		1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Required Pattern: At least the following
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: plan
+..... value	S	1..1	string	Plan Number
+..... name	S	0..1	string	Plan Name
+
+doco Documentation for this format
+Terminology Bindings (Differential)
+Path	Status	Usage	ValueSet	Version	Source
+Coverage.type	Base	extensible	Payer Type  .	📦20250419	VSAC v0.24
+Coverage.relationship	Base	extensible	SubscriberPolicyholder Relationship Codes 	📦4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+us-core-15	error	Coverage	Member Id in Coverage.identifier or Coverage.subscriberId SHALL be present	identifier.type.coding.where(system='http://terminology.hl7.org/CodeSystem/v2-0203' and code='MB').exists() or subscriberId.exists()
+Snapshot View
+
+Name	Flags	Card.	Type	Description & Constraints    Filter: 
+ Filtersdoco
+.. Coverage	C	0..*	Coverage	Insurance or medical plan or a payment agreement
+Constraints: us-core-15
+... id	Σ	0..1	id	Logical id of this artifact
+... meta	Σ	0..1	Meta	Metadata about the resource
+... implicitRules	?!Σ	0..1	uri	A set of rules under which this content was created
+... language		0..1	code	Language of the resource content
+Binding: CommonLanguages (preferred): A human language.
+Additional Bindings	Purpose
+AllLanguages	Max Binding
+... text		0..1	Narrative	Text summary of the resource, for human interpretation
+This profile does not constrain the narrative in regard to content, language, or traceability to data elements
+... contained		0..*	Resource	Contained, inline Resources
+... extension		0..*	Extension	Additional content defined by implementations
+... modifierExtension	?!	0..*	Extension	Extensions that cannot be ignored
+... Slices for identifier	SΣ	0..*	Identifier	Member ID and other identifiers
+Slice: Unordered, Open by value:type
+.... identifier:memberid	SΣC	0..1	Identifier	Member ID
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+Slice: Unordered, Open by value:url
+..... use	?!Σ	0..1	code	usual | official | temp | secondary | old (If known)
+Binding: IdentifierUse (required): Identifies the purpose for this identifier, if known .
+..... type	SΣ	1..1	CodeableConcept	Member Number identifier type
+Binding: Identifier Type Codes (extensible): A coded type for an identifier that can be used to determine which identifier to use for a specific purpose.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/v2-0203
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: MB
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+..... system	Σ	0..1	uri	The namespace for the identifier value
+Example General: http://www.acme.com/identifiers/patient
+..... value	Σ	0..1	string	The value that is unique
+Example General: 123456
+..... period	Σ	0..1	Period	Time period when id is/was valid for use
+..... assigner	Σ	0..1	Reference(Organization)	Organization that issued id (may be just text)
+... status	?!SΣ	1..1	code	active | cancelled | draft | entered-in-error
+Binding: FinancialResourceStatusCodes (required): A code specifying the state of the resource instance.
+... type	SΣ	0..1	CodeableConcept	Coverage category such as medical or accident
+Binding: Payer Type . (extensible): US Public Health Data Consortium Source of Payment Codes
+... policyHolder	Σ	0..1	Reference(Patient | RelatedPerson | Organization)	Owner of the policy
+... subscriber	Σ	0..1	Reference(Patient | RelatedPerson)	Subscriber to the policy
+... subscriberId	SΣC	0..1	string	ID assigned to the subscriber
+... beneficiary	SΣ	1..1	Reference(US Core Patient Profile)	Plan beneficiary
+... dependent	Σ	0..1	string	Dependent number
+... relationship	S	1..1	CodeableConcept	Beneficiary relationship to the subscriber
+Binding: SubscriberRelationshipCodes (extensible)
+... period	SΣ	0..1	Period	Coverage start and end dates
+... payor	SΣ	1..1	Reference(US Core Organization Profile S | US Core Patient Profile | US Core RelatedPerson Profile)	Issuer of the policy
+... Slices for class	S	0..*	BackboneElement	Additional coverage classifications
+Slice: Unordered, Open by value:type
+.... class:All Slices				Content/Rules for all slices
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+..... value	Σ	1..1	string	Value associated with the type
+..... name	Σ	0..1	string	Human readable description of the type and value
+.... class:group	S	0..1	BackboneElement	Group
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: group
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+..... value	SΣ	1..1	string	Group Identifier
+..... name	Σ	0..1	string	Human readable description of the type and value
+.... class:plan	S	0..1	BackboneElement	Plan
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Type of class such as 'group' or 'plan'
+Binding: CoverageClassCodes (extensible): The policy classifications, eg. Group, Plan, Class, etc.
+Required Pattern: At least the following
+...... id		0..1	string	Unique id for inter-element referencing
+...... extension		0..*	Extension	Additional content defined by implementations
+...... coding		1..*	Coding	Code defined by a terminology system
+Fixed Value: (Complex)
+....... id		0..1	string	Unique id for inter-element referencing
+....... extension		0..*	Extension	Additional content defined by implementations
+....... system		1..1	uri	Identity of the terminology system
+Fixed Value: http://terminology.hl7.org/CodeSystem/coverage-class
+....... version		0..1	string	Version of the system - if relevant
+....... code		1..1	code	Symbol in syntax defined by the system
+Fixed Value: plan
+....... display		0..1	string	Representation defined by the system
+....... userSelected		0..1	boolean	If this coding was chosen directly by the user
+...... text		0..1	string	Plain text representation of the concept
+..... value	SΣ	1..1	string	Plan Number
+..... name	SΣ	0..1	string	Plan Name
+... order	Σ	0..1	positiveInt	Relative order of the coverage
+... network	Σ	0..1	string	Insurer network
+... costToBeneficiary		0..*	BackboneElement	Patient payments for services/products
+.... id		0..1	string	Unique id for inter-element referencing
+.... extension		0..*	Extension	Additional content defined by implementations
+.... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+.... type	Σ	0..1	CodeableConcept	Cost category
+Binding: CoverageCopayTypeCodes (extensible): The types of services to which patient copayments are specified.
+.... value[x]	Σ	1..1		The amount or percentage due from the beneficiary
+..... valueQuantity			Quantity(SimpleQuantity)	
+..... valueMoney			Money	
+.... exception		0..*	BackboneElement	Exceptions for patient payments
+..... id		0..1	string	Unique id for inter-element referencing
+..... extension		0..*	Extension	Additional content defined by implementations
+..... modifierExtension	?!Σ	0..*	Extension	Extensions that cannot be ignored even if unrecognized
+..... type	Σ	1..1	CodeableConcept	Exception category
+Binding: ExampleCoverageFinancialExceptionCodes (example): The types of exceptions from the part or full value of financial obligations such as copays.
+..... period	Σ	0..1	Period	The effective period of the exception
+... subrogation		0..1	boolean	Reimbursement to insurer
+... contract		0..*	Reference(Contract)	Contract details
+
+doco Documentation for this format
+Terminology Bindings
+Path	Status	Usage	ValueSet	Version	Source
+Coverage.language	Base	preferred	Common Languages 	📍4.0.1	FHIR Std.
+Coverage.identifier:memberid.​use	Base	required	IdentifierUse 	📍4.0.1	FHIR Std.
+Coverage.identifier:memberid.​type	Base	extensible	IdentifierType 	📍4.0.1	FHIR Std.
+Coverage.status	Base	required	Financial Resource Status Codes 	📍4.0.1	FHIR Std.
+Coverage.type	Base	extensible	Payer Type  .	📦20250419	VSAC v0.24
+Coverage.relationship	Base	extensible	SubscriberPolicyholder Relationship Codes 	📦4.0.1	FHIR Std.
+Coverage.class.type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Coverage.class:group.​type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Coverage.class:plan.​type	Base	extensible	Coverage Class Codes 	📍4.0.1	FHIR Std.
+Coverage.costToBeneficiary.​type	Base	extensible	Coverage Copay Type Codes 	📍4.0.1	FHIR Std.
+Coverage.costToBeneficiary.​exception.type	Base	example	Example Coverage Financial Exception Codes 	📍4.0.1	FHIR Std.
+Constraints
+Id	Grade	Path(s)	Description	Expression
+dom-2	error	Coverage	If the resource is contained in another resource, it SHALL NOT contain nested Resources	contained.contained.empty()
+dom-3	error	Coverage	If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource	contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()
+dom-4	error	Coverage	If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated	contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()
+dom-5	error	Coverage	If a resource is contained in another resource, it SHALL NOT have a security label	contained.meta.security.empty()
+dom-6	best practice	Coverage	A resource should have narrative for robust management	text.`div`.exists()
+ele-1	error	**ALL** elements	All FHIR elements must have a @value or children	hasValue() or (children().count() > id.count())
+ext-1	error	**ALL** extensions	Must have either extensions or value[x], not both	extension.exists() != value.exists()
+us-core-15	error	Coverage	Member Id in Coverage.identifier or Coverage.subscriberId SHALL be present	identifier.type.coding.where(system='http://terminology.hl7.org/CodeSystem/v2-0203' and code='MB').exists() or subscriberId.exists()
+This structure is derived from Coverage
+
+Summary
+
+Mandatory: 1 element(1 nested mandatory element)
+Must-Support: 16 elements
+
+Structures
+
+This structure refers to these other structures:
+
+US Core Patient Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient)
+US Core Organization Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization)
+US Core RelatedPerson Profile (http://hl7.org/fhir/us/core/StructureDefinition/us-core-relatedperson)
+Slices
+
+This structure defines the following Slices:
+
+The element 1 is sliced based on the value of Coverage.identifier
+The element 1 is sliced based on the value of Coverage.class
+Maturity: 3
+
+ 
+
+Other representations of profile: CSV, Excel, Schematron
+
+Notes:
+Quick Start
+
+Below is an overview of the required Server RESTful FHIR interactions for this profile - for example, search and read operations - when supporting the US Core interactions to access this profile's information (Profile Support + Interaction Support). Note that systems that support only US Core Profiles (Profile Only Support) are not required to support these interactions. See the US Core Server CapabilityStatement for a complete list of supported RESTful interactions for this IG.
+
+See the Scopes Format section for a description of the SMART scopes syntax.
+See the Search Syntax section for a description of the US Core search syntax.
+See the General Requirements section for additional rules and expectations when a Server requires status parameters.
+See the General Guidance section for additional guidance on searching for multiple patients.
+US Core Scopes
+Servers providing access to coverage data SHALL support these US Core SMART Scopes:
+
+resource level scopes: <patient|user|system>/Coverage.rs
+Mandatory Search Parameters:
+SHALL support searching for all coverages for a patient using the patient search parameter:
+
+GET [base]/Coverage?patient={Type/}[id]
+
+Example:
+
+GET [base]/Coverage?patient=1137192
+Implementation Notes: Fetches a bundle of all Coverage resources for the specified patient (how to search by reference)
+
+IG © 2025+ HL7 International / Cross-Group Projects. Package hl7.fhir.us.core#8.0.1 based on FHIR 4.0.1. Generated 2025-12-10
+Links: Table of Contents | QA Report | Version History | CC0 | Propose a change

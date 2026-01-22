@@ -1,0 +1,46 @@
+Interoperability
+With new models of care emerging and evolving, there is a clear need for more effective information sharing between care settings, organisations and geographies, as well as between professionals and citizens, to optimise patient outcomes and quality of care. This is reliant on the ability of IT systems across health and care to be interoperable with one another and is key to the delivery of the future vision of care in England.
+
+More integrated ways of working across health and care are necessary to enabling care professionals and citizens to better manage care.  Working with organisations such as those delivering new models of care and initiatives being driven by integrated care systems.
+
+Our system-wide move towards interoperability focuses upon the following areas:
+
+Working with services to identify their strategic business needs in relation to interoperability to inform development of required solutions
+Development of priority use cases for interoperability to provide business justification for local investment and development of supporting systems and products nationally
+Supporting local organisations with tools and guidance to enable them to develop effective solutions to interoperability problems
+Developing standards to support the move from paper to electronic transfers of care for:
+Discharge from inpatient care
+Discharge from mental health
+A&E attendance
+Outpatient clinic letters
+Developing standards to support the move to systems enabling access to patient information through open interfaces (CareConnect APIs)
+Commissioning NHS Digital in the delivery of interoperability standards
+Work with INTEROPen in the adoption of interoperability.
+The adoption of interoperability
+The Chief Clinical Information Officer for health and care in England has outlined seven priority areas:
+
+NHS number/Citizen ID – real-time access to the NHS Number at the point of care across the service, ensuring that the NHS Number is associated with care record elements e.g. lab tests. The Provider must ensure that, with effect from 1 April 2020, the Service User’s verified NHS Number is available to all clinical Staff when engaged in the provision of any Service to that Service User – this is stated in the 2019/20 Standard Contract
+Medications – all medication messages in the NHS to be interoperable and machine readable across the service
+Staff ID – ensuring that there is a consistent way to identify and authenticate staff across the service
+Dates and scheduling – a consistent set of interoperability standards for dates and scheduling information that enables a consistent approach to appointment booking across venues of care and the creation of historic and forward views of appointments
+Basic observations – a consistent set of interoperability standards for the sharing of a core set of structured observations
+Basic pathology – a consistent set of interoperability standards for the sharing of a core set of pathology tests
+Diagnostic coding – implementation of SNOMED CT across the wider service. SNOMED CT must be utilised in place of Read codes before 1 April 2018 across Primary care settings. For Secondary Care, Acute Care, Mental Health, Community systems, Dentistry and other systems used in the direct management of care of an individual must use SNOMED CT as the clinical terminology before 1 April 2020.
+NHS Standard Contract requirements
+The NHS Standard Contract has required organisations to align their inpatient, emergency care,  mental health discharges and  outpatient letters to nationally published specifications. Provider must ensure that its major clinical information technology systems enable clinical data to be accessible to other providers of services to Service Users as structured information through open interfaces in accordance with Open API Policy and Guidance and, with effect from 1 April 2020, Care Connect APIs; 
+
+Transfers of Care
+When transferring or discharging a Service User from an inpatient or day case or accident and emergency Service, the Provider must within 24 hours following that transfer or discharge issue a Discharge Summary to the Service User’s GP and/or Referrer and to any relevant third-party provider of health or social care, using the applicable Delivery Method. The Provider must ensure that it is at all times able to send and receive Discharge Summaries via all applicable Delivery
+The Transfer of Care message should contain structured narrative, coded content. The message should be human readable, machine readable and machine to machine transferable, once scrutinised by the GP
+Transfer of care FHIR structured messages need to comply with the specifications which can be found on the developer.nhs.uk website
+For out of the area ToC the sending organisation must be able to support the sending of the document via MESH
+CareConnect
+CareConnect Open APIs have been developed by NHS Digital and INTEROPen to support the delivery of care by opening up information and data held across different clinical care settings. The CareConnect Open APIs use nationally defined FHIR resources and are a method of transferring records from a source to a recipient.
+A CareConnect generic record will contain Metadata (i.e. patient, location); written statements about the care provided (i.e. diagnosis, medications, procedures, allergies); and coded entries (medication, diagnosis, procedure).
+When combined with other capabilities (such as National Record Locator Service (NRLS) CareConnect Open API will enable clinicians in one care setting to view records from across other care settings (i.e. a clinician in A&E accessing a patient’s medical record from an out of area service)
+In both cases, organisations would be expected to have implemented these requirements and/or have clearly agreed local plans in place for their delivery.
+
+More information on Interoperability and updates on Transfers of Care and CareConnect can be found on the Interoperability workspace on FuturesNHS. To view the page, you will need to request to join the workspace by sending an email to england.interoperability@nhs.net.
+
+Contact us
+Email: england.interoperability@nhs.net.
