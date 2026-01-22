@@ -64,6 +64,7 @@ logs/
 
 # ChromaDB - EXCLUDE RAW DATABASE FILES (use zip instead)
 data/chroma_db/
+data/chroma_db.zip
 *.bin
 *.pickle
 
