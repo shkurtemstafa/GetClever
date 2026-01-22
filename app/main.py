@@ -4,6 +4,7 @@
 
 import streamlit as st
 import os
+import io
 import sys
 from pathlib import Path
 import plotly.express as px
@@ -20,43 +21,32 @@ sys.path.append(str(Path(__file__).parent.parent))
 from rag.prompting import RAGSystem
 
 # Vector store download URL - you'll need to replace this with your actual URL
-VECTOR_STORE_URL = "https://drive.google.com/uc?export=download&id=1_g8GO7pdODTyuxGyAYg6pB2FY3Z8iLoG"
 
-def download_vector_store():
-    """Download vector store from external URL."""
+VECTOR_STORE_ID = "1_g8GO7pdODTyuxGyAYg6pB2FY3Z8iLoG"
+VECTOR_STORE_URL = f"https://drive.google.com/uc?id={VECTOR_STORE_ID}"
+
+def download_vector_store_in_memory():
+    """Download vector store from Google Drive and extract in memory."""
     db_path = Path(__file__).parent.parent / "data" / "chroma_db"
-    zip_path = Path(__file__).parent.parent / "data" / "chroma_db.zip"
-    
     if db_path.exists():
-        return True
-        
+        return True  # Already exists
+
     try:
-        st.info("🔄 Downloading vector store for first use...")
-        
-        # Create data directory if it doesn't exist
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Download the zip file
+        st.info("🔄 Downloading vector store...")
+        db_path.mkdir(parents=True, exist_ok=True)
+
+        # Download zip file into memory
         response = requests.get(VECTOR_STORE_URL, stream=True)
         response.raise_for_status()
-        
-        # Save to temporary file first
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
-            for chunk in response.iter_content(chunk_size=8192):
-                tmp_file.write(chunk)
-            tmp_zip_path = tmp_file.name
-        
-        # Extract the zip file
-        st.info("📦 Extracting vector store...")
-        with zipfile.ZipFile(tmp_zip_path, 'r') as zip_ref:
-            zip_ref.extractall(Path(__file__).parent.parent / "data")
-        
-        # Clean up temporary file
-        os.unlink(tmp_zip_path)
-        
+        zip_bytes = io.BytesIO(response.content)
+
+        st.info("📦 Extracting vector store in memory...")
+        with zipfile.ZipFile(zip_bytes) as zip_ref:
+            zip_ref.extractall(db_path)
+
         st.success("✅ Vector store ready!")
         return True
-        
+
     except Exception as e:
         st.error(f"Failed to download vector store: {str(e)}")
         return False
@@ -81,8 +71,8 @@ def ensure_vector_store_exists():
                 return False
         else:
             # No local zip, download from external source
-            return download_vector_store()
-    
+            return download_vector_store_in_memory()
+
     return db_path.exists()
 
 # Page configuration
