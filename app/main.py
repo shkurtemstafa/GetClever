@@ -23,7 +23,7 @@ from rag.prompting import RAGSystem
 # Vector store download URL - you'll need to replace this with your actual URL
 
 VECTOR_STORE_ID = "1_g8GO7pdODTyuxGyAYg6pB2FY3Z8iLoG"
-VECTOR_STORE_URL = f"https://drive.google.com/uc?id={VECTOR_STORE_ID}"
+VECTOR_STORE_URL = f"https://drive.google.com/uc?export=download&confirm=1&id={VECTOR_STORE_ID}"
 
 def download_vector_store_in_memory():
     """Download vector store from Google Drive and extract in memory."""
@@ -40,7 +40,12 @@ def download_vector_store_in_memory():
         response.raise_for_status()
         zip_bytes = io.BytesIO(response.content)
 
+        # Validate it's actually a ZIP file
+        if not zipfile.is_zipfile(zip_bytes):
+            raise ValueError("Downloaded file is not a valid ZIP (Google Drive HTML page received)")
+
         st.info("📦 Extracting vector store in memory...")
+        zip_bytes.seek(0)  # Reset position after validation
         with zipfile.ZipFile(zip_bytes) as zip_ref:
             zip_ref.extractall(db_path)
 
