@@ -20,10 +20,16 @@ This RAG system specializes in:
 Visit [https://getclever.streamlit.app/](https://getclever.streamlit.app/) and start asking questions immediately.
 
 **How to use:**
-1. **Documents Auto-Load**: If you've used the app before, documents load automatically
-2. **First Time**: Click "Ingest Documents" in the sidebar (5-8 minutes one-time setup)
-3. **Ask Questions**: Type questions about healthcare, digital health, or AI in medicine
-4. **Get Answers**: Receive answers with citations and confidence scores
+1. **Ready to use**: Documents are already loaded - just start typing your questions!
+2. **Ask questions**: Type questions about healthcare, digital health, or AI in medicine in the chat box
+3. **Get answers**: Receive detailed responses with citations and confidence scores
+4. **Optional**: If you want to test document ingestion, click "Ingest Documents" in the sidebar (takes 5-8 minutes)
+
+**Try these questions to get started:**
+- "What is WHO's digital health strategy?"
+- "How is AI being used in healthcare?"
+- "What are the main challenges in health data analytics?"
+- "What is the European Health Data Space?"
 
 ### Local Setup (Optional)
 
