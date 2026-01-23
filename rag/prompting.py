@@ -457,47 +457,135 @@ Confidence: [High/Medium/Low based on how well the context supports your answer]
         return {"safe": True, "reason": "Passed all checks"}
     
     def generate_followup_questions(self, query: str, answer: str, context_documents: List[LangchainDocument]) -> List[str]:
-        """Generate relevant follow-up questions."""
+        """Generate follow-up questions that the system can actually answer."""
         try:
-            # Extract key topics from the answer for better follow-up generation
+            # Check if the original answer was substantive
+            is_no_answer = self._is_no_answer_response(answer)
+            
+            if is_no_answer:
+                # If we couldn't answer the original question, suggest questions about topics we DO have info on
+                return self._generate_alternative_questions(query, context_documents)
+            else:
+                # If we answered successfully, suggest deeper questions about the same topic
+                return self._generate_deeper_questions(query, answer, context_documents)
+            
+        except Exception as e:
+            print(f"Error generating follow-up questions: {str(e)}")
+            return []
+    
+    def _generate_deeper_questions(self, query: str, answer: str, context_documents: List[LangchainDocument]) -> List[str]:
+        """Generate deeper questions when we successfully answered the original question."""
+        try:
+            document_content = "\n\n".join([doc.page_content[:300] for doc in context_documents[:3]])
             answer_preview = answer[:400] if len(answer) > 400 else answer
             
-            followup_prompt = f"""Based on the question "{query}" and the provided answer, suggest 3 highly relevant follow-up questions that could be answered using the same document context.
+            followup_prompt = f"""Based on the successful answer provided, suggest 3 specific follow-up questions that dive deeper into the same topic using the available document content.
 
-Question: {query}
+Original Question: {query}
 Answer provided: {answer_preview}
 
-Generate questions that:
-1. Dive deeper into specific aspects mentioned in the answer
-2. Ask about implementation details, examples, or case studies
-3. Explore related concepts, benefits, challenges, or best practices
-4. Ask for clarification on technical terms or processes mentioned
-5. Inquire about different perspectives or approaches discussed
+Available document content:
+{document_content}
 
-Make the questions specific and actionable. Avoid generic questions.
+Generate follow-up questions that:
+1. Ask for more specific details about concepts mentioned in the answer
+2. Explore implementation steps, examples, or case studies mentioned in the documents
+3. Ask about benefits, challenges, or best practices covered in the content
+4. Inquire about related approaches or frameworks discussed in the documents
+
+IMPORTANT: Base questions on specific information visible in the document content above.
 
 Format as a simple list:
-1. [Specific, detailed question 1]
-2. [Specific, detailed question 2] 
-3. [Specific, detailed question 3]"""
+1. [Specific deeper question]
+2. [Specific deeper question] 
+3. [Specific deeper question]"""
 
             messages = [
-                SystemMessage(content="You are a helpful assistant that generates highly relevant, specific follow-up questions based on the content provided."),
+                SystemMessage(content="Generate deeper follow-up questions based strictly on the provided document content."),
                 HumanMessage(content=followup_prompt)
             ]
             
             response = self.llm.invoke(messages)
+            return self._extract_questions(response.content)
             
-            questions = []
-            for line in response.content.split('\n'):
-                line = line.strip()
-                if line and (line.startswith('1.') or line.startswith('2.') or line.startswith('3.')):
-                    question = line[2:].strip()
-                    if question and len(question) > 10:  # Ensure questions are substantial
-                        questions.append(question)
+        except Exception as e:
+            print(f"Error generating deeper questions: {str(e)}")
+            return []
+    
+    def _generate_alternative_questions(self, query: str, context_documents: List[LangchainDocument]) -> List[str]:
+        """Generate alternative questions when we couldn't answer the original question."""
+        try:
+            document_content = "\n\n".join([doc.page_content[:400] for doc in context_documents[:5]])
             
-            return questions[:3]
+            followup_prompt = f"""The user asked: "{query}" but we don't have enough information to answer it directly.
+
+However, we do have information about related topics. Based on the available document content below, suggest 3 questions that ARE answerable and might interest someone who asked the original question.
+
+Available document content:
+{document_content}
+
+Generate questions that:
+1. Are clearly answerable from the document content shown above
+2. Are related to the general topic area of the original question
+3. Help the user explore what information IS available
+4. Focus on topics, concepts, or frameworks mentioned in the documents
+
+IMPORTANT: Only suggest questions about topics clearly covered in the document content above.
+
+Format as a simple list:
+1. [Question about available topic]
+2. [Question about available topic] 
+3. [Question about available topic]"""
+
+            messages = [
+                SystemMessage(content="Generate alternative questions based strictly on available document content. Only suggest questions that can be answered from the provided documents."),
+                HumanMessage(content=followup_prompt)
+            ]
             
+            response = self.llm.invoke(messages)
+            return self._extract_questions(response.content)
+            
+        except Exception as e:
+            print(f"Error generating alternative questions: {str(e)}")
+            return []
+    
+    def _extract_questions(self, response_content: str) -> List[str]:
+        """Extract questions from LLM response."""
+        questions = []
+        for line in response_content.split('\n'):
+            line = line.strip()
+            if line and any(line.startswith(f'{i}.') for i in range(1, 4)):
+                question = line[2:].strip()
+                if question and len(question) > 10:
+                    questions.append(question)
+        return questions[:3]
+    
+    def _can_answer_question(self, question: str, context_documents: List[LangchainDocument]) -> bool:
+        """Check if a question can be answered using the provided context documents."""
+        try:
+            # Create a simple prompt to test if the question can be answered
+            context_text = "\n\n".join([doc.page_content[:500] for doc in context_documents[:3]])  # Use first 3 docs
+            
+            test_prompt = f"""Based ONLY on the following context, can you provide a substantive answer to this question?
+
+Context:
+{context_text}
+
+Question: {question}
+
+Respond with only "YES" if you can provide a good answer, or "NO" if the context doesn't contain enough information."""
+
+            messages = [
+                SystemMessage(content="You are a strict evaluator. Only respond YES if the context clearly contains information to answer the question substantively."),
+                HumanMessage(content=test_prompt)
+            ]
+            
+            response = self.llm.invoke(messages)
+            return response.content.strip().upper().startswith("YES")
+            
+        except Exception as e:
+            print(f"Error validating question: {str(e)}")
+            return False
         except Exception as e:
             print(f"Error generating follow-up questions: {e}")
             # Fallback generic questions based on query content
