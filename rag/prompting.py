@@ -517,28 +517,30 @@ Format as a simple list:
         try:
             document_content = "\n\n".join([doc.page_content[:400] for doc in context_documents[:5]])
             
-            followup_prompt = f"""The user asked: "{query}" but we don't have enough information to answer it directly.
+            followup_prompt = f"""The user asked: "{query}" but we don't have information to answer it.
 
-However, we do have information about related topics. Based on the available document content below, suggest 3 questions that ARE answerable and might interest someone who asked the original question.
+Generate follow-up questions based on the original user question and the available document content.
+
+Rules:
+- If the original topic has no information in the documents, suggest questions that are as close as possible to the original topic and for which answers exist in the documents, if not suggest completely different healthcare-related questions instead.
+- Focus on topics such as healthcare, digital health, AI in medicine, or health data that ARE covered
+- Only suggest questions that can definitely be answered from the documents
+- Questions should be interesting, educational, and relevant to digital health
 
 Available document content:
 {document_content}
 
-Generate questions that:
-1. Are clearly answerable from the document content shown above
-2. Are related to the general topic area of the original question
-3. Help the user explore what information IS available
-4. Focus on topics, concepts, or frameworks mentioned in the documents
+Format as a simple numbered list:
+1. [Closest possible question that has an answer in the documents]
+2. [Closest possible question that has an answer in the documents] 
+3. [Closest possible question that has an answer in the documents]
 
-IMPORTANT: Only suggest questions about topics clearly covered in the document content above.
-
-Format as a simple list:
-1. [Question about available topic]
-2. [Question about available topic] 
-3. [Question about available topic]"""
+IMPORTANT:
+- Never suggest questions that cannot be answered from the documents
+- Try to keep the question as near as possible to the original topic, but only suggest those with answers"""
 
             messages = [
-                SystemMessage(content="Generate alternative questions based strictly on available document content. Only suggest questions that can be answered from the provided documents."),
+                SystemMessage(content="When we can't answer the original question, suggest the closest possible questions that we CAN answer from our documents. Try to stay as close to the original topic as possible while ensuring the questions are answerable."),
                 HumanMessage(content=followup_prompt)
             ]
             
