@@ -47,7 +47,8 @@ def download_vector_store_in_memory():
         st.info("📦 Extracting vector store in memory...")
         zip_bytes.seek(0)  # Reset position after validation
         with zipfile.ZipFile(zip_bytes) as zip_ref:
-            zip_ref.extractall(db_path)
+            zip_ref.extractall(db_path.parent)  # Creates data/chroma_db/ directly
+
 
         st.success("✅ Vector store ready!")
         return True
